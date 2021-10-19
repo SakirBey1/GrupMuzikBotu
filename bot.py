@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
 from pyrogram import Client
 from config import Config
 bot = Client(
-    "VCPlayer",
+    "GrupMüzikBotu",
     Config.API_ID,
     Config.API_HASH,
     bot_token=Config.BOT_TOKEN,
