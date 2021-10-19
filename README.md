@@ -1,4 +1,4 @@
-# VCPlayerBot
+# Gryb Müzik Botu
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/subinps/VCPlayerBot?color=blue&style=flat)
 ![GitHub issues](https://img.shields.io/github/issues/subinps/VCPlayerBot)
@@ -62,13 +62,6 @@ Telegram bot to stream videos in telegram voicechat for both groups and channels
  
 ## Deploy to VPS
 
-```sh
-git clone https://github.com/subinps/VCPlayerBot
-cd VCPlayerBot
-pip3 install -r requirements.txt
-# <Create Variables appropriately (.env [optional])>
-python3 main.py
-```
 
 ## Features
 
@@ -101,7 +94,7 @@ Fork the repo and edit as per your needs.
 
 ## CREDITS
 
-- [Laky-64](https://github.com/Laky-64) for [py-tgcalls](https://github.com/pytgcalls/pytgcalls)
-- [Dan](https://github.com/delivrance) for [Pyrogram](https://github.com/pyrogram/pyrogram)
+- [Laky-64](https://github.com/SakirBey1) for [py-tgcalls](https://t.me/Sakirbey1)
+- [Dan](https://t.me/SakirBey1) for [Pyrogram](https://github.com/SakirBey1)
 
 
