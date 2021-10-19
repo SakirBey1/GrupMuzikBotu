@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -48,7 +48,7 @@ class Config:
    
     #Database
     DATABASE_URI=os.environ.get("DATABASE_URI", None)
-    DATABASE_NAME=os.environ.get("DATABASE_NAME", "VCPlayerBot")
+    DATABASE_NAME=os.environ.get("DATABASE_NAME", "GrupMüzikBotu")
 
 
     #heroku
@@ -167,9 +167,9 @@ class Config:
        CUSTOM_QUALITY=int(CUSTOM_QUALITY)
        if CUSTOM_QUALITY > 100:
           CUSTOM_QUALITY = 100
-          LOGGER.warning("maximum quality allowed is 100, invalid quality specified. Quality set to 100")
+          LOGGER.warning("izin verilen maksimum kalite 100, geçersiz kalite belirtildi. Kalite 100'e ayarlandı")
        elif CUSTOM_QUALITY < 10:
-          LOGGER.warning("Minimum Quality allowed is 10., Qulaity set to 10")
+          LOGGER.warning("İzin verilen minimum Kalite 10'dur., Qulaity 10'a ayarlanmıştır")
           CUSTOM_QUALITY = 10
        if  66.9  < CUSTOM_QUALITY < 100:
           if not E_BITRATE:
@@ -181,263 +181,261 @@ class Config:
           if not E_BITRATE:
              BITRATE=24000
     except:
-       if CUSTOM_QUALITY.lower() == 'high':
+       if CUSTOM_QUALITY.lower() == 'yüksek':
           CUSTOM_QUALITY=100
-       elif CUSTOM_QUALITY.lower() == 'medium':
+       elif CUSTOM_QUALITY.lower() == 'orta':
           CUSTOM_QUALITY=66.9
-       elif CUSTOM_QUALITY.lower() == 'low':
+       elif CUSTOM_QUALITY.lower() == 'düşük':
           CUSTOM_QUALITY=50
        else:
-          LOGGER.warning("Invalid QUALITY specified.Defaulting to High.")
+          LOGGER.warning("Geçersiz KALİTE belirtildi. Varsayılan olarak Yüksek olarak ayarlanıyor.")
           CUSTOM_QUALITY=100
 
 
 
     #help strings 
     PLAY_HELP="""
-__You can play using any of these options__
+__Bu seçeneklerden herhangi birini kullanarak oynayabilirsiniz__
 
-1. Play a video from a YouTube link.
-Command: **/play**
-__You can use this as a reply to a YouTube link or pass link along command. or as a reply to message to search that in YouTube.__
+1. Bir YouTube bağlantısından bir video oynatın.
+Komut: **/play**
+__Bunu bir YouTube bağlantısına yanıt olarak veya bağlantıyı birlikte ilet komutu olarak kullanabilirsiniz. veya bunu YouTube'da aramak için iletiye yanıt olarak.__
 
-2. Play from a telegram file.
-Command: **/play**
-__Reply to a supported media(video and documents or audio file ).__
-Note: __For both the cases /fplay also can be used by admins to play the song immediately without waiting for queue to end.__
+2. Bir telgraf dosyasından oynatın.
+Komut: **/play**
+__Desteklenen bir medyaya yanıt verin (video ve belgeler veya ses dosyası).__
+Not: __Her iki durumda da /fplay ayrıca yöneticiler tarafından sıranın bitmesini beklemeden şarkıyı hemen çalmak için kullanılabilir.__
 
-3. Play from a YouTube playlist
-Command: **/yplay**
-__First get a playlist file from @GetPlaylistBot or @DumpPlaylist and reply to playlist file.__
+3. Bir YouTube oynatma listesinden oynatın
+Komut: **/yplay**
+__Önce @GetPlaylistBot veya @DumpPlaylist'ten bir çalma listesi dosyası alın ve çalma listesi dosyasına yanıt verin.__
 
-4. Live Stream
-Command: **/stream**
-__Pass a live stream URL or any direct URL to play it as stream.__
+4. Canlı Akış
+Komut: **/flow**
+__Akış olarak oynatmak için bir canlı yayın URL'si veya herhangi bir doğrudan URL iletin.__
 
-5. Import an old playlist.
-Command: **/import**
-__Reply to a previously exported playlist file. __
+5. Eski bir çalma listesini içe aktarın.
+Komut: **/import**
+__Önceden dışa aktarılan bir oynatma listesi dosyasına yanıt verin. __
 
-6. Channel Play
-Command: **/cplay**
-__Use `/cplay channel username or channel id` to play all the files from the given channel.
-By default both video files and documents will be played . You can add or remove the file type using `FILTERS` var. 
-For example , to stream audio, video and document from the channel use `/env FILTERS video document audio` . If you need only audio , you can use `/env FILTERS video audio` and so on.
-To set up the files from a channel as STARTUP_STREAM, so that the files will be automatically added to playlist on startup of bot. use `/env STARTUP_STREAM channel username or channel id`
+6. Kanal Oynatma
+Komut: **/cplay**
+__Verilen kanaldaki tüm dosyaları oynatmak için `/cplay kanal kullanıcı adı veya kanal kimliği`ni kullanın.
+Varsayılan olarak hem video dosyaları hem de belgeler oynatılacaktır. `FILTERS` değişkenini kullanarak dosya türünü ekleyebilir veya kaldırabilirsiniz.
+Örneğin, kanaldan ses, video ve belge akışı yapmak için `/env FILTERS video belge sesi`ni kullanın. Yalnızca sese ihtiyacınız varsa, `/env FILTERS video audio` vb. kullanabilirsiniz.
+Bir kanaldaki dosyaları STARTUP_STREAM olarak ayarlamak, böylece dosyalar bot başlangıcında otomatik olarak oynatma listesine eklenecektir. `/env STARTUP_STREAM kanal kullanıcı adı veya kanal kimliği' kullanın
 
-Note that for public channels you should use username of channels along with '@' and for private channels you should use channel id.
-For private channels , make sure both the bot and USER account is a member of channel.__
+Herkese açık kanallar için '@' ile birlikte kanalların kullanıcı adını ve özel kanallar için kanal kimliğini kullanmanız gerektiğini unutmayın.
+Özel kanallar için hem bot hem de KULLANICI hesabının kanal üyesi olduğundan emin olun.__
 """
     SETTINGS_HELP="""
-**You can easily customize you player as per you needs. The following configurations are available:**
+**Oynatıcınızı ihtiyaçlarınıza göre kolayca özelleştirebilirsiniz. Aşağıdaki konfigürasyonlar mevcuttur:**
 
 🔹Command: **/settings**
 
 🔹AVAILABLE CONFIGURATIONS:
 
-**Player Mode** -  __This allows you to run your player as 24/7 music player or only when there is song in queue. 
-If disabled, player will leave from the call when the playlist is empty.
-Otherwise STARTUP_STREAM will be streamed when playlist id empty.__
+**Oyuncu Modu** - __Bu, oynatıcınızı 7/24 müzik çalar olarak veya yalnızca sırada şarkı olduğunda çalıştırmanıza olanak tanır.
+Devre dışı bırakılırsa, oynatma listesi boş olduğunda oyuncu aramadan çıkar.
+Aksi takdirde, oynatma listesi kimliği boş olduğunda STARTUP_STREAM yayınlanır.__
 
-**Video Enabled** -  __This allows you to switch between audio and video.
-if disabled, video files will be played as audio.__
+**Video Etkin** - __Bu, ses ve video arasında geçiş yapmanızı sağlar.
+devre dışı bırakılırsa, video dosyaları ses olarak oynatılacaktır.__
 
-**Admin Only** - __Enabling this will restrict non-admin users from using play command.__
+**Yalnızca Yönetici** - __Bunu etkinleştirmek, yönetici olmayan kullanıcıların oynatma komutunu kullanmasını kısıtlar.__
 
-**Edit Title** - __Enabling this will edit your VideoChat title to current playing songs name.__
+**Başlığı Düzenle** - __Bunu etkinleştirmek, VideoChat başlığınızı o anda çalmakta olan şarkı adına göre düzenler.__
 
-**Shuffle Mode** - __Enabling this will shuffle the playlist whenever you import a playlist or using /yplay __
+**Karıştırma Modu** - __Bunu etkinleştirmek, bir oynatma listesini içe aktardığınızda veya /yplay'i kullandığınızda oynatma listesini karıştırır __
 
-**Auto Reply** - __Choose whether to reply the PM messages of playing user account.
-You can  set up a custom reply message using `REPLY_MESSAGE` confug.__
-
+**Otomatik Yanıt** - __Oynayan kullanıcı hesabının PM mesajlarını yanıtlayıp yanıtlamayacağınızı seçin.
+`REPLY_MESSAGE` konfigürasyonunu kullanarak özel bir cevap mesajı oluşturabilirsiniz.__
 """
     SCHEDULER_HELP="""
-__VCPlayer allows you to schedule a stream. 
-This means you can schedule a stream for a future date and on the scheduled date, stream will be played automatically.
-At present you can schedule a stream for even one year!!. Make sure you have set up a databse, else you will loose your schedules whenever the player restarts. __
+__GrupMüzikBotu, bir akış planlamanıza olanak tanır.
+Bu, gelecekteki bir tarih için bir akış planlayabileceğiniz ve planlanan tarihte akışın otomatik olarak oynatılacağı anlamına gelir.
+Şu anda bir yıllık bir yayın akışı planlayabilirsiniz!!. Bir veritabanı kurduğunuzdan emin olun, aksi takdirde oynatıcı yeniden başladığında programlarınızı kaybedersiniz. __
 
 Command: **/schedule**
 
-__Reply to a file or a youtube video or even a text message with schedule command.
-The replied media or youtube video will be scheduled and will be played on the scheduled date.
-The scheduling time is by default in IST and you can change the timezone using `TIME_ZONE` config.__
+__Bir dosyaya veya youtube videosuna veya hatta bir metin mesajına program komutuyla yanıt verin.
+Cevaplanan medya veya youtube videosu planlanacak ve planlanan tarihte oynatılacaktır.
+IST'de programlama zamanı varsayılandır ve 'TIME_ZONE' yapılandırmasını kullanarak saat dilimini değiştirebilirsiniz.__
 
 Command: **/slist**
-__View your current scheduled streams.__
+__Mevcut planlanmış akışlarınızı görüntüleyin.__
 
 Command: **/cancel**
-__Cancel a schedule by its schedule id, You can get the schedule id using /slist command__
+__Bir programı zamanlama kimliğine göre iptal edin, /slist komutunu kullanarak zamanlama kimliğini alabilirsiniz__
 
 Command: **/cancelall**
-__Cancel all the scheduled streams__
+__Planlanmış tüm akışları iptal edin__
 """
     RECORDER_HELP="""
-__With VCPlayer you can easily record all your video chats.
-By default telegram allows you to record for a maximum duration of 4 hours. 
-An attempt to overcome this limit has been made by automatically restarting the recording after  4 hours__
+__GrupMüzikBotu ile tüm görüntülü sohbetlerinizi kolayca kaydedebilirsiniz.
+Varsayılan olarak telgraf, maksimum 4 saat kayıt yapmanızı sağlar.
+4 saat sonra kaydı otomatik olarak yeniden başlatarak bu sınırı aşmaya çalışıldı__
 
 Command: **/record**
 
-AVAILABLE CONFIGURATIONS:
-1. Record Video: __If enabled both the video and audio of the stream will be recorded, otherwise only audio will be recorded.__
+MEVCUT YAPILANDIRMALAR:
+1. Video Kaydet: __Etkinleştirilirse, akışın hem videosu hem de sesi kaydedilir, aksi takdirde yalnızca ses kaydedilir.__
 
-2. Video dimension: __Choose between portrait and landscape dimensions for your recording__
+2. Video boyutu: __Kaydınız için dikey ve yatay boyutlar arasında seçim yapın__
 
-3. Custom Recording Title: __Set up a custom recording title for your recordings. Use a command /rtitle to configure this.
-To turn off the custom title, use `/rtitle False `__
+3. Özel Kayıt Başlığı: __Kayıtlarınız için özel bir kayıt başlığı ayarlayın. Bunu yapılandırmak için /rtitle komutunu kullanın.
+Özel başlığı kapatmak için `/rtitle False `__ kullanın
 
-4. Recording Dumb: __You can set up forwarding all your recordings to a channel, this will be useful since otherwise recordings are sent to saved messages of streaming account.
-Setup using `RECORDING_DUMP` config.__
+4. Kayıt Aptal: __Tüm kayıtlarınızı bir kanala iletmeyi ayarlayabilirsiniz, aksi takdirde kayıtlar akış hesabının kayıtlı mesajlarına gönderileceğinden bu yararlı olacaktır.
+`RECORDING_DUMP` yapılandırmasını kullanarak kurulum.__
 
-⚠️ If you start a recording with vcplayer, make sure you stop the same with vcplayer.
+⚠️ GrupMüzikbotu ile bir kayda başlarsanız, vcplayer ile aynı şeyi durdurduğunuzdan emin olun.
 
 """
 
     CONTROL_HELP="""
-__VCPlayer allows you to control your streams easily__
-1. Skip a song.
+__GrupMüzikBotu, yayınlarınızı kolayca kontrol etmenizi sağlar__
+1. Bir şarkıyı atlayın.
 Command: **/skip**
-__You can pass a number greater than 2 to skip the song in that position.__
+__Şarkıyı o konumda atlamak için 2'den büyük bir sayı iletebilirsiniz.__
 
-2. Pause the player.
+2. Oynatıcıyı duraklatın.
 Command: **/pause**
 
-3. Resume the player.
+3. Oynatıcıyı devam ettirin.
 Command: **/resume**
 
-4. Change Volume.
+4. Ses Seviyesini Değiştirin.
 Command: **/volume**
-__Pass the volume in between 1-200.__
+__Sesi 1-200 arasında geçirin.__
 
-5. Leave the VC.
+5. VC'den ayrılın.
 Command: **/leave**
 
-6. Shuffle the playlist.
+6. Çalma listesini karıştırın.
 Command: **/shuffle**
 
-7. Clear the current playlist queue.
+7. Mevcut çalma listesi sırasını temizleyin.
 Command: **/clearplaylist**
 
-8. Seek the video.
+8. Videoyu arayın.
 Command: **/seek**
-__You can pass number of seconds to be skipped. Example: /seek 10 to skip 10 sec. /seek -10 to rewind 10 sec.__
+__Atlanacak saniye sayısını geçebilirsiniz. Örnek: 10 saniye atlamak için /seek 10. /10 saniye geri sarmak için -10 ara.__
 
-9. Mute the player.
+9. Oynatıcıyı sessize alın.
 Command: **/vcmute**
 
-10. Unmute the player.
+10. Oynatıcının sesini açın.
 Command : **/vcunmute**
 
-11. Shows the playlist.
+11. Çalma listesini gösterir.
 Command: **/playlist** 
-__Use /player to show with control buttons__
+__Kontrol düğmeleriyle göstermek için /player'ı kullanın__
 """
 
     ADMIN_HELP="""
-__VCPlayer allows to control admins, that is you can add admins and remove them easily.
-It is recommended to use a MongoDb database for better experience, else all you admins will get reset after restart.__
+__GrupMüzikBotu, adminleri kontrol etmenizi sağlar, yani adminleri kolayca ekleyip çıkarabilirsiniz.
+Daha iyi bir deneyim için bir MongoDb veritabanı kullanılması önerilir, aksi takdirde tüm yöneticileriniz yeniden başlattıktan sonra sıfırlanır.__
 
 Command: **/vcpromote**
-__You can promote a admin with their username or user id or by replying to that users message.__
+__Bir yöneticiyi, kullanıcı adı veya kullanıcı kimliği ile veya o kullanıcı mesajına yanıt vererek terfi ettirebilirsiniz.__
 
 Command: **/vcdemote**
-__Remove an admin from admin list__
+__Yönetici listesinden bir yöneticiyi kaldırın__
 
 Command: **/refresh**
-__Refresh the admin list of chat__
+__Sohbetin yönetici listesini yenileyin__
 """
 
     MISC_HELP="""
 Command: **/export**
-__VCPlayer allows you to export your current playlist for future use.__
-__A json file will be sent to you and the same can be used along /import command.__
+__GrupMüzikBotu, mevcut çalma listenizi ileride kullanmak üzere dışa aktarmanıza olanak tanır.__
+__Size bir json dosyası gönderilecek ve aynısı /import komutu ile birlikte kullanılabilir.__
 
 Command : **/logs**
-__If your player went something gone wrong, you can easily check the logs using /logs__
+__Oyuncunuz bir şeyler ters gittiyse, /logs kullanarak günlükleri kolayca kontrol edebilirsiniz__
  
 Command : **/env**
-__Setup your config vars with /env command.__
-__Example: To set up a__ `REPLY_MESSAGE` __use__ `/env REPLY_MESSAGE=Hey, Check out @subin_works rather than spamming in my PM`__
-__You can delete a config var by ommiting a value for that, Example:__ `/env LOG_GROUP=` __this will delete the existing LOG_GROUP config.
+__Yapılandırma değişkenlerinizi /env komutuyla ayarlayın.__
+__Örnek: Bir __ `REPLY_MESSAGE` kurmak için __use__ `/env REPLY_MESSAGE=Hey, PM'ime spam göndermek yerine @subin_works'e göz atın`__
+__Bir yapılandırma değişkenini bunun için bir değer atlayarak silebilirsiniz, Örnek:__ `/env LOG_GROUP=` __bu, mevcut LOG_GROUP yapılandırmasını siler.
 
 Command: **/config**
-__Same as using /env**
+__ /env kullanımıyla aynı**
 
 Command: **/update**
-__Updates youe bot with latest changes__
+__En son değişikliklerle botunuzu günceller__
 
-Tip: __You can easily change the CHAT config by adding the user account and bot account to any other group and any command in new group__
+İpucu: __Kullanıcı hesabını ve bot hesabını başka bir gruba ve yeni gruptaki herhangi bir komutu ekleyerek CHAT yapılandırmasını kolayca değiştirebilirsiniz__
 
 """
     ENV_HELP="""
-**These are the configurable vars available and you can set each one of them using /env command**
+**Bunlar yapılandırılabilir değişkenlerdir ve her birini /env komutunu kullanarak ayarlayabilirsiniz**
 
 
-**Mandatory Vars**
+**Zorunlu Değişkenler**
 
-1. `API_ID` : __Get From [my.telegram.org](https://my.telegram.org/)__
+1. `API_ID` : __[API_ID AL](https://t.me/OtoMyTelegramBot)__
 
-2. `API_HASH` : __Get from [my.telegram.org](https://my.telegram.org)__
+2. `API_HASH` : __[API_HASH AL](https://t.me/OtoMyTelegramBot)__
 
 3. `BOT_TOKEN` : __[@Botfather](https://telegram.dog/BotFather)__
 
-4. `SESSION_STRING` : __Generate From here [GenerateStringName](https://repl.it/@subinps/getStringName)__
+4. `SESSION_STRING` : __[StringSession Al](https://t.me/stringsessionbuzz_bot)__
 
-5. `CHAT` : __ID of Channel/Group where the bot plays Music.__
+5. `CHAT` : __ID botun Müzik çaldığı Kanalın/Grubun.__
 
-6. `STARTUP_STREAM` : __This will be streamed on startups and restarts of bot. 
-You can use either any STREAM_URL or a direct link of any video or a Youtube Live link. 
-You can also use YouTube Playlist.Find a Telegram Link for your playlist from [PlayList Dumb](https://telegram.dog/DumpPlaylist) or get a PlayList from [PlayList Extract](https://telegram.dog/GetAPlaylistbot). 
-The PlayList link should in form `https://t.me/DumpPlaylist/xxx`
-You can also use the files from a channel as startup stream. For that just use the channel id or channel username of channel as STARTUP_STREAM value.
-For more info on channel play , read help from player section.__
+6. `STARTUP_STREAM` : __Bu, botun yeniden başlatılmasında ve yeniden başlatılmasında yayınlanacaktır.
+Herhangi bir STREAM_URL'yi veya herhangi bir videonun doğrudan bağlantısını veya bir Youtube Canlı bağlantısını kullanabilirsiniz. .
+Oynatma Listesi bağlantısı "https://t.me/SakirBey1/xxx" biçiminde olmalıdır.
+Bir kanaldaki dosyaları başlangıç ​​akışı olarak da kullanabilirsiniz. Bunun için STARTUP_STREAM değeri olarak kanalın kanal kimliğini veya kanal kullanıcı adını kullanmanız yeterlidir.
+Kanal oynatma hakkında daha fazla bilgi için oynatıcı bölümündeki yardımı okuyun.__
 
-**Recommended Optional Vars**
+**Önerilen Opsiyonel Değişkenler**
 
-1. `DATABASE_URI`: __MongoDB database Url, get from [mongodb](https://cloud.mongodb.com). This is an optional var, but it is recomonded to use this to experiance the full features.__
+1. `DATABASE_URI`: __MongoDB veritabanı URL'si, [mongodb](https://cloud.mongodb.com) adresinden alın. Bu isteğe bağlı bir değişkendir, ancak tüm özellikleri deneyimlemek için bunu kullanmanız önerilir.__
 
-2. `HEROKU_API_KEY`: __Your heroku api key. Get one from [here](https://dashboard.heroku.com/account/applications/authorizations/new)__
+2. `HEROKU_API_KEY`: __Heroku API anahtarınız. [Buradan](https://dashboard.heroku.com/account/applications/authorizations/new)__ bir tane edinin
 
-3. `HEROKU_APP_NAME`: __Your heroku app's name.__
+3. `HEROKU_APP_NAME`: __Heroku uygulamanızın adı.__
 
-4. `FILTERS`: __Filters for channel play file search. Read help about cplay in player section.__
+4. `FILTERS`: __Kanal oynatma dosyası araması için filtreler. Oynatıcı bölümündeki cplay ile ilgili yardımı okuyun.__
 
-**Other Optional Vars**
-1. `LOG_GROUP` : __Group to send Playlist, if CHAT is a Group__
+**Diğer Opsiyonel Değişkenler**
+1. `LOG_GROUP` : __CHAT bir Grup ise Oynatma Listesi gönderilecek grup__
 
-2. `ADMINS` : __ID of users who can use admin commands.__
+2. `ADMINS` : __ID yönetici komutlarını kullanabilen kullanıcıların sayısı.__
 
-3. `REPLY_MESSAGE` : __A reply to those who message the USER account in PM. Leave it blank if you do not need this feature. (Configurable through buttons if mongodb added. Use /settings)__
+3. `REPLY_MESSAGE` :__Kullanıcı hesabına PM ile mesaj atanlara cevap. Bu özelliğe ihtiyacınız yoksa boş bırakın. (Mongodb eklendiyse düğmeler aracılığıyla yapılandırılabilir. /ayarları kullanın)__
 
-4. `ADMIN_ONLY` : __Pass `True` If you want to make /play command only for admins of `CHAT`. By default /play is available for all.(Configurable through buttons if mongodb added. Use /settings)__
+4. `ADMIN_ONLY` : __Pass `True` Sadece `CHAT` yöneticileri için /play komutu vermek istiyorsanız. Varsayılan olarak /play herkes için mevcuttur.(Mongodb eklendiyse düğmeler aracılığıyla yapılandırılabilir. /ayarları kullanın)__
 
-5. `DATABASE_NAME`: __Database name for your mongodb database.mongodb__
+5. `DATABASE_NAME`: __mongodb veritabanınız için veritabanı adı.mongodb__
 
-6. `SHUFFLE` : __Make it `False` if you dont want to shuffle playlists. (Configurable through buttons)__
+6. `SHUFFLE` : __Çalma listelerini karıştırmak istemiyorsanız __`False` yapın. (Düğmeler aracılığıyla yapılandırılabilir)__
 
-7. `EDIT_TITLE` : __Make it `False` if you do not want the bot to edit video chat title according to playing song. (Configurable through buttons if mongodb added. Use /settings)__
+7. 'EDIT_TITLE' : __Bot'un görüntülü sohbet başlığını çalan şarkıya göre düzenlemesini istemiyorsanız __'Yanlış' yapın. (Mongodb eklendiyse düğmeler aracılığıyla yapılandırılabilir. /ayarları kullanın)__
 
-8. `RECORDING_DUMP` : __A Channel ID with the USER account as admin, to dump video chat recordings.__
+8. `RECORDING_DUMP` : __Görüntülü sohbet kayıtlarını boşaltmak için KULLANICI hesabının yönetici olduğu bir Kanal Kimliği.__
 
-9. `RECORDING_TITLE`: __A custom title for your videochat recordings.__
+9. `RECORDING_TITLE`: __Görüntülü sohbet kayıtlarınız için özel bir başlık.__
 
-10. `TIME_ZONE` : __Time Zone of your country, by default IST__
+10. `TIME_ZONE` : __Ülkenizin Saat Dilimi, varsayılan olarak IST__
 
-11. `IS_VIDEO_RECORD` : __Make it `False` if you do not want to record video, and only audio will be recorded.(Configurable through buttons if mongodb added. Use /record)__
+11. `IS_VIDEO_RECORD` : __Video kaydetmek istemiyorsanız `Yanlış` yapın ve sadece ses kaydedilecektir.(Mongodb eklendiyse butonlar aracılığıyla yapılandırılabilir. /kaydet kullan)__
 
-12. `IS_LOOP` ; __Make it `False` if you do not want 24 / 7 Video Chat. (Configurable through buttons if mongodb added.Use /settings)__
+12. "IS_LOOP"; __7/24 Görüntülü Sohbet istemiyorsanız 'Yanlış' yapın. (Mongodb eklendiyse düğmeler aracılığıyla yapılandırılabilir. /ayarları kullanın)__
 
-13. `IS_VIDEO` : __Make it `False` if you want to use the player as a musicplayer without video. (Configurable through buttons if mongodb added. Use /settings)__
+13. `IS_VIDEO` : __Çaları videosuz bir müzik çalar olarak kullanmak istiyorsanız __'Yanlış' yapın. (Mongodb eklendiyse düğmeler aracılığıyla yapılandırılabilir. /ayarları kullanın)__
 
-14. `PORTRAIT`: __Make it `True` if you want the video recording in portrait mode. (Configurable through buttons if mongodb added. Use /record)__
+14. `PORTRE`: __Video kaydını portre modunda istiyorsanız, __`Doğru` yapın. (Mongodb eklendiyse butonlarla yapılandırılabilir. /record kullanın)__
 
-15. `DELAY` : __Choose the time limit for commands deletion. 10 sec by default.__
+15. `DELAY` : __Komutların silinmesi için zaman sınırını seçin. varsayılan olarak 10 saniye.__
 
-16. `QUALITY` : __Customize the quality of video chat, use one of `high`, `medium`, `low` . __
+16. "KALİTE" : __Görüntülü sohbetin kalitesini özelleştirin, "yüksek", "orta", "düşük" seçeneklerinden birini kullanın. __
 
-17. `BITRATE` : __Bitrate of audio (Not recommended to change).__
+17. "BİTRE" : __Ses bit hızı (Değiştirilmesi önerilmez).__
 
-18. `FPS` : __Fps of video to be played (Not recommended to change.)__
+18. `FPS` : __ Oynatılacak videonun Fps'si (Değiştirilmesi önerilmez.)__
 
 """
