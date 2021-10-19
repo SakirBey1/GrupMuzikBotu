@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -34,23 +34,23 @@ if Config.DATABASE_URI:
 async def main():
     await bot.start()
     Config.BOT_USERNAME = (await bot.get_me()).username
-    LOGGER.info(f"{Config.BOT_USERNAME} Started.")
+    LOGGER.info(f"{Config.BOT_USERNAME} başladı.")
     if Config.DATABASE_URI:
         try:
-            if await db.is_saved("RESTART"):
-                msg=await db.get_config("RESTART")
+            if await db.is_saved("TEKRAR BAŞLAT🔄"):
+                msg=await db.get_config("TEKRAR BAŞLAT🔄")
                 if msg:
                     try:
-                        k=await bot.edit_message_text(msg['chat_id'], msg['msg_id'], text="Succesfully restarted.")
-                        await db.del_config("RESTART")
+                        k=await bot.edit_message_text(msg['chat_id'], msg['msg_id'], text="Başarıyla yeniden başlatıldı.")
+                        await db.del_config("TEKRAR BAŞLAT🔄")
                     except:
                         pass
             await check_changes()
             await sync_from_db()
         except Exception as e:
-            LOGGER.error(f"Errors occured while setting up database for VCPlayerBot, check the value of DATABASE_URI. Full error - {str(e)}", exc_info=True)
-            Config.STARTUP_ERROR="Errors occured while setting up database for VCPlayerBot, check the value of DATABASE_URI. Full error - {str(e)}"
-            LOGGER.info("Activating debug mode, you can reconfigure your bot with /env command.")
+            LOGGER.error(f"GrupMüzikBotu için veritabanı kurulurken hata oluştu, DATABASE_URI değerini kontrol edin. Tam hata - {str(e)}", exc_info=True)
+            Config.STARTUP_ERROR="GrupMüzikBotu için veritabanı kurulurken hata oluştu, DATABASE_URI değerini kontrol edin. Tam hata - {str(e)}"
+            LOGGER.info("Hata ayıklama modunu etkinleştirerek /env komutuyla botunuzu yeniden yapılandırabilirsiniz.")
             await bot.stop()
             from utils import debug
             await debug.start()
@@ -58,8 +58,8 @@ async def main():
             return
 
     if Config.DEBUG:
-        LOGGER.info("Debugging enabled by user, Now in debug mode.")
-        Config.STARTUP_ERROR="Debugging enabled by user, Now in debug mode."
+        LOGGER.info("Hata ayıklama kullanıcı tarafından etkinleştirildi, Şimdi hata ayıklama modunda.")
+        Config.STARTUP_ERROR="Kullanıcı tarafından etkinleştirilen hata ayıklama, Şimdi hata ayıklama modunda."
         from utils import debug
         await bot.stop()
         await debug.start()
@@ -71,9 +71,9 @@ async def main():
         Config.USER_ID = (await USER.get_me()).id
         k=await startup_check()
         if k == False:
-            LOGGER.error("Startup checks not passed , bot is quiting")
+            LOGGER.error("Başlangıç ​​kontrolleri geçilmedi, bot kapanıyor")
             await bot.stop()
-            LOGGER.info("Activating debug mode, you can reconfigure your bot with /env command.")
+            LOGGER.info("Hata ayıklama modunu etkinleştirerek /env komutuyla botunuzu yeniden yapılandırabilirsiniz.")
             from utils import debug
             await debug.start()
             await idle()
@@ -82,14 +82,14 @@ async def main():
         if Config.IS_LOOP:
             if Config.playlist:
                 await play()
-                LOGGER.info("Loop play enabled and playlist is not empty, resuming playlist.")
+                LOGGER.info("Döngü oynatma etkinleştirildi ve oynatma listesi boş değil, oynatma listesi devam ediyor.")
             else:
-                LOGGER.info("Loop play enabled , starting playing startup stream.")
+                LOGGER.info("Döngü oynatma etkinleştirildi, başlangıç ​​akışı oynatılmaya başlandı.")
                 await start_stream()
     except Exception as e:
-        LOGGER.error(f"Startup was unsuccesfull, Errors - {e}", exc_info=True)
-        LOGGER.info("Activating debug mode, you can reconfigure your bot with /env command.")
-        Config.STARTUP_ERROR=f"Startup was unsuccesfull, Errors - {e}"
+        LOGGER.error(f"Başlatma başarısız oldu, Hatalar - {e}", exc_info=True)
+        LOGGER.info("Hata ayıklama modunu etkinleştirerek /env komutuyla botunuzu yeniden yapılandırabilirsiniz..")
+        Config.STARTUP_ERROR=f"Başlatma başarısız oldu, Hatalar - {e}"
         from utils import debug
         await bot.stop()
         await debug.start()
