@@ -1,100 +1,83 @@
-# Gryb Müzik Botu
+## Developer [Sahibim](https://t.me/SakirBey1)
+Telegram botu, hem gruplar hem de kanallar için telegram sesli sohbetinde video akışı sağlar. Canlı akışları, YouTube videolarını ve telgraf medyasını destekler. Kayıt akışı desteği, Zamanlama akışları ve çok daha fazlası ile.
 
-![GitHub Repo stars](https://img.shields.io/github/stars/subinps/VCPlayerBot?color=blue&style=flat)
-![GitHub issues](https://img.shields.io/github/issues/subinps/VCPlayerBot)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/subinps/VCPlayerBot)
-![GitHub contributors](https://img.shields.io/github/contributors/subinps/VCPlayerBot?style=flat)
-![GitHub forks](https://img.shields.io/github/forks/subinps/VCPlayerBot?style=flat)
+## Yapılandırma Değişkenleri:
+### Zorunlu Değişkenler
+1. "API_ID" : [API_ID al]'dan Alın(https://t.me/OtoMyTelegramBot)
+2. "API_HASH" : [API_HASH al](https://t.me/OtoMyTelegramBot) adresinden alın
+3. "BOT_TOKEN" : [@Botfather](https://telegram.dog/BotFather)
+4. `SESSION_STRING` : Buradan Oluştur [string oluştur](https://t.me/stringsessionbuzz_bot)
+5. `CHAT` : Botun Müzik çaldığı Kanalın/Grubun kimliği.
 
-Telegram bot to stream videos in telegram voicechat for both groups and channels. Supports live streams, YouTube videos and telegram media. With record stream support, Schedule streams, and many more.
+## Önerilen İsteğe Bağlı Değişkenler
 
-## Config Vars:
-### Mandatory Vars
-1. `API_ID` : Get From [my.telegram.org](https://my.telegram.org/)
-2. `API_HASH` : Get from [my.telegram.org](https://my.telegram.org)
-3. `BOT_TOKEN` : [@Botfather](https://telegram.dog/BotFather)
-4. `SESSION_STRING` : Generate From here [![GenerateStringName](https://img.shields.io/badge/repl.it-generateStringName-yellowgreen)](https://repl.it/@subinps/getStringName)
-5. `CHAT` : ID of Channel/Group where the bot plays Music.
+1. `DATABASE_URI`: MongoDB veritabanı URL'si, [mongodb](https://cloud.mongodb.com) adresinden alın. Bu isteğe bağlı bir değişkendir, ancak tüm özellikleri deneyimlemek için bunu kullanmanız önerilir.
+2. `HEROKU_API_KEY`: Heroku API anahtarınız. [Buradan](https://dashboard.heroku.com/account/applications/authorizations/new) bir tane edinin
+3. `HEROKU_APP_NAME`: Heroku uygulamalarınızın adı.
+4. `FİLTRELER`: Kanal oynatma aramasını filtreleyin. Kanal oynatma, /cplay komutunu kullanarak özel bir kanaldaki tüm dosyaları oynatabileceğiniz anlamına gelir. Geçerli filtreler "video belgesi" dir. Ses dosyalarını aramak için `video belgesi sesi`ni kullanın. yalnızca video araması için 'video'yu vb. kullanın.
 
-## Recommended Optional Vars
-
-1. `DATABASE_URI`: MongoDB database Url, get from [mongodb](https://cloud.mongodb.com). This is an optional var, but it is recomonded to use this to experiance the full features.
-2. `HEROKU_API_KEY`: Your heroku api key. Get one from [here](https://dashboard.heroku.com/account/applications/authorizations/new)
-3. `HEROKU_APP_NAME`: Your heroku apps name.
-4. `FILTERS`: Filter the search for channel play. Channel play means you can play all the files in a purticular channel using /cplay command. Current filters are `video document` . For searching audio files use `video document audio` . for video only search , use `video` and so on.
-
-### Optional Vars
-1. `LOG_GROUP` : Group to send Playlist, if CHAT is a Group()
-2. `ADMINS` : ID of users who can use admin commands.
-3. `STARTUP_STREAM` : This will be streamed on startups and restarts of bot. You can use either any STREAM_URL or a direct link of any video or a Youtube Live link. You can also use YouTube Playlist.Find a Telegram Link for your playlist from [PlayList Dumb](https://telegram.dog/DumpPlaylist) or get a PlayList from [PlayList Extract](https://telegram.dog/GetAPlaylistbot). The PlayList link should in form `https://t.me/DumpPlaylist/xxx`.
-4. `REPLY_MESSAGE` : A reply to those who message the USER account in PM. Leave it blank if you do not need this feature. (Configurable through bot if mongodb added.)
-5. `ADMIN_ONLY` : Pass `True` If you want to make /play command only for admins of `CHAT`. By default /play is available for all.(Configurable through bot if mongodb added.)
-6. `DATABASE_NAME`: Database name for your mongodb database.
-7. `SHUFFLE` : Make it `False` if you dont want to shuffle playlists. (Configurable through bot if mongodb added.)
-8. `EDIT_TITLE` : Make it `False` if you do not want the bot to edit video chat title according to playing song. (Configurable through bot if mongodb added.)
-9. `RECORDING_DUMP` : A Channel ID with the USER account as admin, to dump video chat recordings.
-10. `RECORDING_TITLE`: A custom title for your videochat recordings.
-11. `TIME_ZONE` : Time Zone of your country, by default IST
-12. `IS_VIDEO_RECORD` : Make it `False` if you do not want to record video, and only audio will be recorded.(Configurable through bot if mongodb added.)
-13. `IS_LOOP` ; Make it `False` if you do not want 24 / 7 Video Chat. (Configurable through bot if mongodb added.)
-14. `IS_VIDEO` : Make it `False` if you want to use the player as a musicplayer without video. (Configurable through bot if mongodb added.)
-15. `PORTRAIT`: Make it `True` if you want the video recording in portrait mode. (Configurable through bot if mongodb added.)
-16. `DELAY` : Choose the time limit for commands deletion. 10 sec by default.
-18. `QUALITY` : Customize the quality of video chat, use one of `high`, `medium`, `low` . 
-19. `BITRATE` : Bitrate of audio (Not recommended to change).
-20. `FPS` : Fps of video to be played (Not recommended to change.)
+### İsteğe Bağlı Değişkenler
+1. `LOG_GROUP` : CHAT bir Grup ise, Çalma Listesi gönderilecek grup()
+2. `YÖNETİCİLER` : Yönetici komutlarını kullanabilen kullanıcıların kimliği.
+3. `STARTUP_STREAM` : Bu, botun yeniden başlatılmasında ve yeniden başlatılmasında yayınlanacaktır. Herhangi bir STREAM_URL'yi veya herhangi bir videonun doğrudan bağlantısını veya bir Youtube Canlı bağlantısını kullanabilirsiniz. Ayrıca YouTube Oynatma Listesini de kullanabilirsiniz. adresinden oynatma listeniz için bir Telegram Bağlantısı bulabilir veya . Oynatma Listesi bağlantısı "" biçiminde olmalıdır.
+4. `REPLY_MESSAGE` : KULLANICI hesabına PM ile mesaj atanlara cevap. Bu özelliğe ihtiyacınız yoksa boş bırakın. (Mongodb eklendiyse bot aracılığıyla yapılandırılabilir.)
+5. `ADMIN_ONLY` : `True`yu Geçir Eğer sadece `CHAT` yöneticileri için /play komutu yapmak istiyorsanız. Varsayılan olarak /play herkes için mevcuttur.(Mongodb eklendiyse bot aracılığıyla yapılandırılabilir.)
+6. `DATABASE_NAME`: mongodb veritabanınız için veritabanı adı.
+7. `SHUFFLE` : Çalma listelerini karıştırmak istemiyorsanız `False` yapın. (Mongodb eklendiyse bot aracılığıyla yapılandırılabilir.)
+8. 'EDIT_TITLE' : Botun çalan şarkıya göre görüntülü sohbet başlığını düzenlemesini istemiyorsanız 'Yanlış' yapın. (Mongodb eklendiyse bot aracılığıyla yapılandırılabilir.)
+9. `RECORDING_DUMP` : Görüntülü sohbet kayıtlarını boşaltmak için yönetici olarak KULLANICI hesabı olan bir Kanal Kimliği.
+10. `RECORDING_TITLE`: Görüntülü sohbet kayıtlarınız için özel bir başlık.
+11. `TIME_ZONE` : Ülkenizin Saat Dilimi, varsayılan olarak IST
+12. `IS_VIDEO_RECORD` : Video kaydetmek istemiyorsanız `False` yapın ve sadece ses kaydedilecektir.(Mongodb eklendiyse bot ile yapılandırılabilir.)
+13. "IS_LOOP"; 7/24 Görüntülü Sohbet istemiyorsanız 'Yanlış' yapın. (Mongodb eklendiyse bot aracılığıyla yapılandırılabilir.)
+14. `IS_VIDEO` : Oynatıcıyı videosuz bir müzik çalar olarak kullanmak istiyorsanız `Yanlış` yapın. (Mongodb eklendiyse bot aracılığıyla yapılandırılabilir.)
+15. 'PORTRE': Video kaydını portre modunda istiyorsanız 'Doğru' yapın. (Mongodb eklendiyse bot aracılığıyla yapılandırılabilir.)
+16. `DELAY` : Komutların silinmesi için zaman sınırını seçin. Varsayılan olarak 10 sn.
+18. "KALİTE" : Görüntülü sohbetin kalitesini özelleştirin, "yüksek", "orta", "düşük" seçeneklerinden birini kullanın.
+19. `BITRATE` : Ses bit hızı (Değiştirilmesi önerilmez).
+20. `FPS` : Oynatılacak videonun Fps'si (Değiştirilmesi tavsiye edilmez.)
 
 
 
 ## Requirements
 - Python 3.8 or Higher.
-- [FFMpeg](https://www.ffmpeg.org/).
 
 
 
 ## Deploy to Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/subinps/VCPlayerBot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/SakirBey1/GrupMuzikBotu)
 
-## Deploy to Railway
-<p><a href=https://github.com/subinps/VCPlayerBot/issues/7> <img src="https://img.shields.io/badge/Deploy%20To%20Railway-blueviolet?style=for-the-badge&logo=railway" width="200""/></a></p>
 
  
-## Deploy to VPS
 
 
-## Features
+## Özellikleri
 
-- Playlist, queue.
-- Zero downtime in playing.
-- Supports Video Recording.
-- Supports Scheduling voicechats.
-- Cool UI for controling the player.
-- Customizabe to audio or video.
-- Custom quality for video chats.
-- Supports Play from Youtube Playlist.
-- Change VoiceChat title to current playing song name.
-- Supports Live streaming from youtube
-- Play from telegram file supported.
-- Starts Radio after if no songs in playlist.
-- Automatic restart even if heroku restarts. (Configurable)
-- Support exporting and importing playlist.
+- Çalma listesi, sıra.
+- Oynarken sıfır kesinti.
+- Video Kaydı destekler.
+- Zamanlama sesli sohbetleri destekler.
+- Oyuncuyu kontrol etmek için harika kullanıcı arayüzü.
+- Ses veya videoya göre özelleştirin.
+- Görüntülü sohbetler için özel kalite.
+- Youtube Oynatma Listesinden Oynatmayı destekler.
+- VoiceChat başlığını mevcut çalmakta olan şarkı adına değiştirin.
+- youtube'dan Canlı akışı destekler
+- Desteklenen telgraf dosyasından oynatın.
+- Çalma listesinde şarkı yoksa Radyo'yu başlatır.
+- Heroku yeniden başlasa bile otomatik yeniden başlatma. (Yapılandırılabilir)
+- Çalma listesini dışa aktarma ve içe aktarma desteği.
 
-### Note
-
-[Note To A So Called Dev](https://telegram.dog/subin_works/203): 
-
-Kanging this codes and and editing a few lines and releasing a V.x  or an [alpha](https://telegram.dog/subin_works/204), beta , gama branches of your repo wont make you a Developer.
-Fork the repo and edit as per your needs.
+Bu kodların çalınması yada çatallanması sizi bir cooder veya developer yapmaz ama lazım ise bi kaç değişiklik yapa bilirsiniz bu proje açık kaynaklı kodlanmıştır kod sahibi ile iletişim için [telegram](https://t.me/SakiBey1) 'dan ulaşa bilirsiniz ...!
 
 ## LICENSE
 
 - [GNU General Public License](./LICENSE)
 
 
-## CREDITS
+## iletişim
 
-- [Laky-64](https://github.com/SakirBey1) for [py-tgcalls](https://t.me/Sakirbey1)
-- [Dan](https://t.me/SakirBey1) for [Pyrogram](https://github.com/SakirBey1)
+- [İnstagram](https://www.instagram.com/sakir_hack81.21/) veya [Telegram](https://t.me/Sakirbey1)
 
 
