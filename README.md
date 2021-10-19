@@ -3,7 +3,7 @@ Telegram botu, hem gruplar hem de kanallar için telegram sesli sohbetinde video
 
 ## Yapılandırma Değişkenleri:
 ### Zorunlu Değişkenler
-1. "API_ID" : [API_ID al]'dan Alın(https://t.me/OtoMyTelegramBot)
+1. "API_ID" : [API_ID al](https://t.me/OtoMyTelegramBot)
 2. "API_HASH" : [API_HASH al](https://t.me/OtoMyTelegramBot) adresinden alın
 3. "BOT_TOKEN" : [@Botfather](https://telegram.dog/BotFather)
 4. `SESSION_STRING` : Buradan Oluştur [string oluştur](https://t.me/stringsessionbuzz_bot)
