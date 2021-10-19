@@ -69,7 +69,7 @@ Telegram botu, hem gruplar hem de kanallar için telegram sesli sohbetinde video
 - Heroku yeniden başlasa bile otomatik yeniden başlatma. (Yapılandırılabilir)
 - Çalma listesini dışa aktarma ve içe aktarma desteği.
 
-Bu kodların çalınması yada çatallanması sizi bir cooder veya developer yapmaz ama lazım ise bi kaç değişiklik yapa bilirsiniz bu proje açık kaynaklı kodlanmıştır kod sahibi ile iletişim için [telegram](https://t.me/SakiBey1) 'dan ulaşa bilirsiniz ...!
+Bu kodların çalınması yada çatallanması sizi bir cooder veya developer yapmaz ama lazım ise bi kaç değişiklik yapa bilirsiniz bu proje açık kaynaklı kodlanmıştır kod sahibi ile iletişim için [telegram](https://t.me/SakirBey1) 'dan ulaşa bilirsiniz ...!
 
 ## LICENSE
 
