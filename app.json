@@ -1,7 +1,7 @@
 {
-    "name": "VCPlayerBot",
+    "name": "GrupMüzikBotu",
     "description": "Telegram bot to stream video in telegram VC",
-    "repository": "https://github.com/subinps/VCPlayerBot",
+    "repository": "https://github.com/SakirBey1/GrupMüzikbotu",
     "stack": "container",
     "keywords": [
       "telegram",
