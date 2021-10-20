@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -108,7 +108,7 @@ async def play():
         if not file:
             file = await dl.pyro_dl(song[2])
             if not file:
-                LOGGER.info("Downloading file from telegram")
+                LOGGER.info("Telegramdan dosya indirme")
                 file = await bot.download_media(song[2])
             Config.GET_FILE[song[5]] = file
             await sleep(3)
@@ -117,7 +117,7 @@ async def play():
             await sleep(1)
         total=int(((song[5].split("_"))[1])) * 0.005
         while not (os.stat(file).st_size) >= total:
-            LOGGER.info("Waiting for download")
+            LOGGER.info("İndirme bekleniyor")
             LOGGER.info(str((os.stat(file).st_size)))
             await sleep(1)
     elif song[3] == "url":
@@ -128,24 +128,24 @@ async def play():
         if Config.playlist or Config.STREAM_LINK:
             return await skip()     
         else:
-            LOGGER.error("This stream is not supported , leaving VC.")
+            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
             await leave_call()
             return False 
     link, seek, pic, width, height = await chek_the_media(file, title=f"{song[1]}")
     if not link:
-        LOGGER.warning("Unsupported link, Skiping from queue.")
+        LOGGER.warning("Desteklenmeyen bağlantı, Kuyruktan atlanıyor.")
         return
     await sleep(1)
     if Config.STREAM_LINK:
         Config.STREAM_LINK=False
-    LOGGER.info(f"STARTING PLAYING: {song[1]}")
+    LOGGER.info(f"OYNAMAYA BAŞLAMA: {song[1]}")
     await join_call(link, seek, pic, width, height)
 
 async def schedule_a_play(job_id, date):
     try:
         scheduler.add_job(run_schedule, "date", [job_id], id=job_id, run_date=date, max_instances=50, misfire_grace_time=None)
     except ConflictingIdError:
-        LOGGER.warning("This already scheduled")
+        LOGGER.warning("Bu zaten planlanmış")
         return
     if not Config.CALL_STATUS or not Config.IS_ACTIVE:
         if Config.SCHEDULE_LIST[0]['job_id'] == job_id \
@@ -163,15 +163,15 @@ async def schedule_a_play(job_id, date):
                 )
                 Config.HAS_SCHEDULE=True
             except ScheduleDateInvalid:
-                LOGGER.error("Unable to schedule VideoChat, since date is invalid")
+                LOGGER.error("Tarih geçersiz olduğundan VideoChat planlanamıyor")
             except Exception as e:
-                LOGGER.error(f"Error in scheduling voicechat- {e}", exc_info=True)
+                LOGGER.error(f"Sesli sohbet planlanırken hata- {e}", exc_info=True)
     await sync_to_db()
 
 async def run_schedule(job_id):
     data=Config.SCHEDULED_STREAM.get(job_id)
     if not data:
-        LOGGER.error("The Scheduled stream was not played, since data is missing")
+        LOGGER.error("Veriler eksik olduğundan Planlanmış akış oynatılmadı")
         old=filter(lambda k: k['job_id'] == job_id, Config.SCHEDULE_LIST)
         if old:
             Config.SCHEDULE_LIST.remove(old)
@@ -180,12 +180,12 @@ async def run_schedule(job_id):
     else:
         if Config.HAS_SCHEDULE:
             if not await start_scheduled():
-                LOGGER.error("Scheduled stream skipped, Reason - Unable to start a voice chat.")
+                LOGGER.error("Planlanan akış atlandı, Neden - Sesli sohbet başlatılamıyor.")
                 return
         data_ = [{1:data['1'], 2:data['2'], 3:data['3'], 4:data['4'], 5:data['5']}]
         Config.playlist = data_ + Config.playlist
         await play()
-        LOGGER.info("Starting Scheduled Stream")
+        LOGGER.info("Planlanmış Akışı Başlatma")
         del Config.SCHEDULED_STREAM[job_id]
         old=list(filter(lambda k: k['job_id'] == job_id, Config.SCHEDULE_LIST))
         if old:
@@ -208,7 +208,7 @@ async def cancel_all_schedules():
             del Config.SCHEDULED_STREAM[job]      
     Config.SCHEDULE_LIST.clear()
     await sync_to_db()
-    LOGGER.info("All the schedules are removed")
+    LOGGER.info("Tüm programlar kaldırıldı")
 
 async def skip():
     if Config.STREAM_LINK and len(Config.playlist) == 0 and Config.IS_LOOP:
@@ -216,12 +216,12 @@ async def skip():
         return
     elif not Config.playlist \
         and Config.IS_LOOP:
-        LOGGER.info("Loop Play enabled, switching to STARTUP_STREAM, since playlist is empty.")
+        LOGGER.info("Döngü Oynatma etkinleştirildi, oynatma listesi boş olduğundan STARTUP_STREAM'e geçiliyor.")
         await start_stream()
         return
     elif not Config.playlist \
         and not Config.IS_LOOP:
-        LOGGER.info("Loop Play is disabled, leaving call since playlist is empty.")
+        LOGGER.info("Loop Play devre dışı, çalma listesi boş olduğu için aramadan çıkıyor.")
         await leave_call()
         return
     old_track = Config.playlist.pop(0)
@@ -236,17 +236,17 @@ async def skip():
             del Config.GET_FILE[old_track[5]]
     if not Config.playlist \
         and Config.IS_LOOP:
-        LOGGER.info("Loop Play enabled, switching to STARTUP_STREAM, since playlist is empty.")
+        LOGGER.info("Döngü Oynatma etkinleştirildi, oynatma listesi boş olduğundan STARTUP_STREAM'e geçiliyor.")
         await start_stream()
         return
     elif not Config.playlist \
         and not Config.IS_LOOP:
-        LOGGER.info("Loop Play is disabled, leaving call since playlist is empty.")
+        LOGGER.info("Loop Play devre dışı, çalma listesi boş olduğu için aramadan çıkıyor.")
         await leave_call()
         return
-    LOGGER.info(f"START PLAYING: {Config.playlist[0][1]}")
-    if Config.DUR.get('PAUSE'):
-        del Config.DUR['PAUSE']
+    LOGGER.info(f"OYUNA BAŞLA: {Config.playlist[0][1]}")
+    if Config.DUR.get('DURAKLAT'):
+        del Config.DUR['DURAKLAT']
     await play()
     if len(Config.playlist) <= 1:
         return
@@ -257,7 +257,7 @@ async def check_vc():
     a = await bot.send(GetFullChannel(channel=(await bot.resolve_peer(Config.CHAT))))
     if a.full_chat.call is None:
         try:
-            LOGGER.info("No active calls found, creating new")
+            LOGGER.info("Etkin arama bulunamadı, yeni oluşturuluyor")
             await USER.send(CreateGroupCall(
                 peer=(await USER.resolve_peer(Config.CHAT)),
                 random_id=random.randint(10000, 999999999)
@@ -268,7 +268,7 @@ async def check_vc():
             await sleep(2)
             return True
         except Exception as e:
-            LOGGER.error(f"Unable to start new GroupCall :- {e}", exc_info=True)
+            LOGGER.error(f"Yeni GroupCall başlatılamıyor :- {e}", exc_info=True)
             return False
     else:
         if Config.HAS_SCHEDULE:
@@ -278,7 +278,7 @@ async def check_vc():
 
 async def join_call(link, seek, pic, width, height):  
     if not await check_vc():
-        LOGGER.error("No voice call found and was unable to create a new one. Exiting...")
+        LOGGER.error("Sesli arama bulunamadı ve yeni bir arama oluşturulamadı. Çıkılıyor...")
         return
     if Config.HAS_SCHEDULE:
         await start_scheduled()
@@ -294,17 +294,17 @@ async def join_call(link, seek, pic, width, height):
         await join_call(link, seek, pic, width, height)
     await sleep(1)
     if not seek:
-        Config.DUR["TIME"]=time.time()
+        Config.DUR["ZAMAN"]=time.time()
         if Config.EDIT_TITLE:
             await edit_title()
-    old=Config.GET_FILE.get("old")
+    old=Config.GET_FILE.get("eskimiş")
     if old:
         for file in old:
             os.remove(f"./downloads/{file}")
         try:
-            del Config.GET_FILE["old"]
+            del Config.GET_FILE["eskimiş"]
         except:
-            LOGGER.error("Error in Deleting from dict")
+            LOGGER.error("dict'den silme hatası")
             pass
     await send_playlist()
 
@@ -330,7 +330,7 @@ async def start_scheduled():
         return True
     except Exception as e:
         if 'GROUPCALL_ALREADY_STARTED' in str(e):
-            LOGGER.warning("Already Groupcall Exist")
+            LOGGER.warning("Zaten Grup Çağrısı Var")
             return True
         else:
             Config.HAS_SCHEDULE=False
@@ -339,7 +339,7 @@ async def start_scheduled():
 async def join_and_play(link, seek, pic, width, height):
     try:
         if seek:
-            start=str(seek['start'])
+            start=str(seek['Başlat'])
             end=str(seek['end'])
             if not Config.IS_VIDEO:
                 await group_call.join_group_call(
@@ -375,11 +375,11 @@ async def join_and_play(link, seek, pic, width, height):
                 else:
                     if not width \
                         or not height:
-                        LOGGER.error("No Valid Video Found and hence removed from playlist.")
+                        LOGGER.error("Geçerli Video Bulunamadı ve bu nedenle oynatma listesinden kaldırıldı.")
                         if Config.playlist or Config.STREAM_LINK:
                             return await skip()     
                         else:
-                            LOGGER.error("This stream is not supported , leaving VC.")
+                            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
                             return 
                     cwidth, cheight = resize_ratio(width, height, Config.CUSTOM_QUALITY)
                     await group_call.join_group_call(
@@ -432,11 +432,11 @@ async def join_and_play(link, seek, pic, width, height):
                 else:
                     if not width \
                         or not height:
-                        LOGGER.error("No Valid Video Found and hence removed from playlist.")
+                        LOGGER.error("Geçerli Video Bulunamadı ve bu nedenle oynatma listesinden kaldırıldı.")
                         if Config.playlist or Config.STREAM_LINK:
                             return await skip()     
                         else:
-                            LOGGER.error("This stream is not supported , leaving VC.")
+                            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
                             return 
                     cwidth, cheight = resize_ratio(width, height, Config.CUSTOM_QUALITY)
                     await group_call.join_group_call(
@@ -458,7 +458,7 @@ async def join_and_play(link, seek, pic, width, height):
         return True
     except NoActiveGroupCall:
         try:
-            LOGGER.info("No active calls found, creating new")
+            LOGGER.info("Etkin arama bulunamadı, yeni oluşturuluyor")
             await USER.send(CreateGroupCall(
                 peer=(await USER.resolve_peer(Config.CHAT)),
                 random_id=random.randint(10000, 999999999)
@@ -469,25 +469,25 @@ async def join_and_play(link, seek, pic, width, height):
             await sleep(2)
             await restart_playout()
         except Exception as e:
-            LOGGER.error(f"Unable to start new GroupCall :- {e}", exc_info=True)
+            LOGGER.error(f"Yeni GroupCall başlatılamıyor :- {e}", exc_info=True)
             pass
     except InvalidVideoProportion:
-        LOGGER.error("This video is unsupported")
+        LOGGER.error("Bu video desteklenmiyor")
         if Config.playlist or Config.STREAM_LINK:
             return await skip()     
         else:
-            LOGGER.error("This stream is not supported , leaving VC.")
+            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
             return 
     except Exception as e:
-        LOGGER.error(f"Errors Occured while joining, retrying Error- {e}", exc_info=True)
+        LOGGER.error(f"Hatalar Katılırken, yeniden denenirken Hata- {e}", exc_info=True)
         return False
 
 
 async def change_file(link, seek, pic, width, height):
     try:
         if seek:
-            start=str(seek['start'])
-            end=str(seek['end'])
+            start=str(seek['Başlat'])
+            end=str(seek['son'])
             if not Config.IS_VIDEO:
                 await group_call.change_stream(
                     int(Config.CHAT),
@@ -520,11 +520,11 @@ async def change_file(link, seek, pic, width, height):
                 else:
                     if not width \
                         or not height:
-                        LOGGER.error("No Valid Video Found and hence removed from playlist.")
+                        LOGGER.error("Geçerli Video Bulunamadı ve bu nedenle oynatma listesinden kaldırıldı.")
                         if Config.playlist or Config.STREAM_LINK:
                             return await skip()     
                         else:
-                            LOGGER.error("This stream is not supported , leaving VC.")
+                            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
                             return 
 
                     cwidth, cheight = resize_ratio(width, height, Config.CUSTOM_QUALITY)
