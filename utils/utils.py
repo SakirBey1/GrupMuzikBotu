@@ -575,11 +575,11 @@ async def change_file(link, seek, pic, width, height):
                 else:
                     if not width \
                         or not height:
-                        LOGGER.error("No Valid Video Found and hence removed from playlist.")
+                        LOGGER.error("Geçerli Video Bulunamadı ve bu nedenle oynatma listesinden kaldırıldı.")
                         if Config.playlist or Config.STREAM_LINK:
                             return await skip()     
                         else:
-                            LOGGER.error("This stream is not supported , leaving VC.")
+                            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
                             return 
                     cwidth, cheight = resize_ratio(width, height, Config.CUSTOM_QUALITY)
                     await group_call.change_stream(
@@ -597,37 +597,37 @@ async def change_file(link, seek, pic, width, height):
                         ),
                         )
     except InvalidVideoProportion:
-        LOGGER.error("Invalid video, skipped")
+        LOGGER.error("Geçersiz video, atlandı")
         if Config.playlist or Config.STREAM_LINK:
             return await skip()     
         else:
-            LOGGER.error("This stream is not supported , leaving VC.")
+            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
             await leave_call()
             return 
     except Exception as e:
-        LOGGER.error(f"Error in joining call - {e}", exc_info=True)
+        LOGGER.error(f"Çağrıya katılma hatası - {e}", exc_info=True)
         return False
 
 
 async def seek_file(seektime):
     play_start=int(float(Config.DUR.get('TIME')))
     if not play_start:
-        return False, "Player not yet started"
+        return False, "Oyuncu henüz başlamadı"
     else:
         data=Config.DATA.get("FILE_DATA")
         if not data:
-            return False, "No Streams for seeking"        
+            return False, "Aramak için Akış yok"        
         played=int(float(time.time())) - int(float(play_start))
         if data.get("dur", 0) == 0:
-            return False, "Seems like live stream is playing, which cannot be seeked."
+            return False, "Görünen o ki, aranamayan canlı yayın oynatılıyor."
         total=int(float(data.get("dur", 0)))
         trimend = total - played - int(seektime)
         trimstart = played + int(seektime)
         if trimstart > total:
-            return False, "Seeked duration exceeds maximum duration of file"
+            return False, "Aranan süre, dosyanın maksimum süresini aşıyor"
         new_play_start=int(play_start) - int(seektime)
         Config.DUR['TIME']=new_play_start
-        link, seek, pic, width, height = await chek_the_media(data.get("file"), seek={"start":trimstart, "end":trimend})
+        link, seek, pic, width, height = await chek_the_media(data.get("dosya"), seek={"başla":trimstart, "son":trimend})
         await join_call(link, seek, pic, width, height)
         return True, None
     
@@ -637,7 +637,7 @@ async def leave_call():
     try:
         await group_call.leave_group_call(Config.CHAT)
     except Exception as e:
-        LOGGER.error(f"Errors while leaving call {e}", exc_info=True)
+        LOGGER.error(f"Çağrıdan çıkarken hatalar {e}", exc_info=True)
     #Config.playlist.clear()
     if Config.STREAM_LINK:
         Config.STREAM_LINK=False
@@ -661,9 +661,9 @@ async def leave_call():
                 )
                 Config.HAS_SCHEDULE=True
             except ScheduleDateInvalid:
-                LOGGER.error("Unable to schedule VideoChat, since date is invalid")
+                LOGGER.error("Tarih geçersiz olduğundan VideoChat planlanamıyor")
             except Exception as e:
-                LOGGER.error(f"Error in scheduling voicechat- {e}", exc_info=True)
+                LOGGER.error(f"Sesli sohbet planlanırken hata- {e}", exc_info=True)
     await sync_to_db()
             
                 
@@ -678,10 +678,10 @@ async def restart():
     if not Config.playlist:
         await start_stream()
         return
-    LOGGER.info(f"- START PLAYING: {Config.playlist[0][1]}")
+    LOGGER.info(f"- OYUNA BAŞLA: {Config.playlist[0][1]}")
     await sleep(1)
     await play()
-    LOGGER.info("Restarting Playout")
+    LOGGER.info("Playout'u Yeniden Başlatma")
     if len(Config.playlist) <= 1:
         return
     await download(Config.playlist[1])
@@ -691,12 +691,12 @@ async def restart_playout():
     if not Config.playlist:
         await start_stream()
         return
-    LOGGER.info(f"RESTART PLAYING: {Config.playlist[0][1]}")
+    LOGGER.info(f"OYNAMAYI YENİDEN BAŞLAT: {Config.playlist[0][1]}")
     data=Config.DATA.get('FILE_DATA')
     if data:
         link, seek, pic, width, height = await chek_the_media(data['file'], title=f"{Config.playlist[0][1]}")
         if not link:
-            LOGGER.warning("Unsupported Link")
+            LOGGER.warning("Desteklenmeyen Bağlantı")
             return
         await sleep(1)
         if Config.STREAM_LINK:
@@ -711,7 +711,7 @@ async def restart_playout():
 
 def is_ytdl_supported(input_url: str) -> bool:
     shei = yt_dlp.extractor.gen_extractors()
-    return any(int_extraactor.suitable(input_url) and int_extraactor.IE_NAME != "generic" for int_extraactor in shei)
+    return any(int_extraactor.suitable(input_url) and int_extraactor.IE_NAME != "Genel" for int_extraactor in shei)
 
 
 async def set_up_startup():
@@ -727,15 +727,15 @@ async def set_up_startup():
         return
     elif Config.STREAM_URL.startswith("https://t.me/DumpPlaylist"):
         Config.YPLAY=True
-        LOGGER.info("YouTube Playlist is set as STARTUP STREAM")
+        LOGGER.info("YouTube Oynatma Listesi, STARTUP STREAM olarak ayarlandı")
         Config.STREAM_SETUP=True
         return
     match = is_ytdl_supported(Config.STREAM_URL)
     if match:
         Config.YSTREAM=True
-        LOGGER.info("YouTube Stream is set as STARTUP STREAM")
+        LOGGER.info("YouTube Akışı, BAŞLANGIÇ YAYINI olarak ayarlandı")
     else:
-        LOGGER.info("Direct link set as STARTUP_STREAM")
+        LOGGER.info("Doğrudan bağlantı STARTUP_STREAM olarak ayarlandı")
         pass
     Config.STREAM_SETUP=True
     
@@ -748,7 +748,7 @@ async def start_stream():
         try:
             msg_id=Config.STREAM_URL.split("/", 4)[4]
         except:
-            LOGGER.error("Unable to fetch youtube playlist.Recheck your startup stream.")
+            LOGGER.error("Youtube oynatma listesi getirilemiyor. Başlangıç ​​akışınızı tekrar kontrol edin.")
             pass
         await y_play(int(msg_id))
         return
@@ -759,13 +759,13 @@ async def start_stream():
         link=await get_link(Config.STREAM_URL)
     else:
         link=Config.STREAM_URL
-    link, seek, pic, width, height = await chek_the_media(link, title="Startup Stream")
+    link, seek, pic, width, height = await chek_the_media(link, title="Başlangıç Akışı")
     if not link:
-        LOGGER.warning("Unsupported link")
+        LOGGER.warning("Desteklenmeyen bağlantı")
         return False
     if Config.IS_VIDEO:
         if not ((width and height) or pic):
-            LOGGER.error("Stream Link is invalid")
+            LOGGER.error("Akış Bağlantısı geçersiz")
             return 
     #if Config.playlist:
         #Config.playlist.clear()
@@ -775,8 +775,8 @@ async def start_stream():
 async def stream_from_link(link):
     link, seek, pic, width, height = await chek_the_media(link)
     if not link:
-        LOGGER.error("Unable to obtain sufficient information from the given url")
-        return False, "Unable to obtain sufficient information from the given url"
+        LOGGER.error("Verilen url'den yeterli bilgi alınamıyor")
+        return False, "Verilen url'den yeterli bilgi alınamıyor"
     #if Config.playlist:
         #Config.playlist.clear()
     Config.STREAM_LINK=link
@@ -795,7 +795,7 @@ async def get_link(file):
         if Config.playlist or Config.STREAM_LINK:
             return await skip()
         else:
-            LOGGER.error("This stream is not supported , leaving VC.")
+            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
             await leave_call()
             return False
     stream = output.decode().strip()
@@ -803,11 +803,11 @@ async def get_link(file):
     if link:
         return link
     else:
-        LOGGER.error("Unable to get sufficient info from link")
+        LOGGER.error("Bağlantıdan yeterli bilgi alınamıyor")
         if Config.playlist or Config.STREAM_LINK:
             return await skip()
         else:
-            LOGGER.error("This stream is not supported , leaving VC.")
+            LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
             await leave_call()
             return False
 
@@ -829,7 +829,7 @@ async def download(song, msg=None):
    
 
 
-async def chek_the_media(link, seek=False, pic=False, title="Music"):
+async def chek_the_media(link, seek=False, pic=False, title="Müzik"):
     if not Config.IS_VIDEO:
         width, height = None, None
         is_audio_=False
@@ -838,15 +838,15 @@ async def chek_the_media(link, seek=False, pic=False, title="Music"):
         except Exception as e:
             LOGGER.error(e, exc_info=True)
             is_audio_ = False
-            LOGGER.error("Unable to get Audio properties within time.")
+            LOGGER.error("Ses özellikleri zaman içinde alınamıyor.")
         if not is_audio_:
-            LOGGER.error("No Audio Source found")
+            LOGGER.error("Ses Kaynağı bulunamadı")
             Config.STREAM_LINK=False
             if Config.playlist or Config.STREAM_LINK:
                 await skip()     
                 return None, None, None, None, None
             else:
-                LOGGER.error("This stream is not supported , leaving VC.")
+                LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
                 return None, None, None, None, None
             
     else:
@@ -859,7 +859,7 @@ async def chek_the_media(link, seek=False, pic=False, title="Music"):
             except Exception as e:
                 LOGGER.error(e, exc_info=True)
                 width, height = None, None
-                LOGGER.error("Unable to get video properties within time.")
+                LOGGER.error("Zaman içinde video özellikleri alınamıyor.")
         if not width or \
             not height:
             is_audio_=False
@@ -867,9 +867,9 @@ async def chek_the_media(link, seek=False, pic=False, title="Music"):
                 is_audio_ = await is_audio(link)
             except:
                 is_audio_ = False
-                LOGGER.error("Unable to get Audio properties within time.")
+                LOGGER.error("Ses özellikleri zaman içinde alınamıyor.")
             if is_audio_:
-                pic_=await bot.get_messages("DumpPlaylist", 30)
+                pic_=await bot.get_messages("DumpOynatma Listesi", 30)
                 photo = "./pic/photo"
                 if not os.path.exists(photo):
                     photo = await pic_.download(file_name=photo)
@@ -884,23 +884,23 @@ async def chek_the_media(link, seek=False, pic=False, title="Music"):
                     await skip()     
                     return None, None, None, None, None
                 else:
-                    LOGGER.error("This stream is not supported , leaving VC.")
+                    LOGGER.error("Bu akış desteklenmiyor, VC'den çıkıyor.")
                     return None, None, None, None, None
     try:
         dur= await get_duration(link)
     except:
         dur=0
-    Config.DATA['FILE_DATA']={"file":link, 'dur':dur}
+    Config.DATA['FILE_DATA']={"dosya":link, 'dur':dur}
     return link, seek, pic, width, height
 
 
 async def edit_title():
     if Config.STREAM_LINK:
-        title="Live Stream"
+        title="Canlı yayın"
     elif Config.playlist:
         title = Config.playlist[0][1]   
     else:       
-        title = "Live Stream"
+        title = "Canlı yayın"
     try:
         chat = await USER.resolve_peer(Config.CHAT)
         full_chat=await USER.send(
@@ -914,7 +914,7 @@ async def edit_title():
         edit = EditGroupCallTitle(call=full_chat.full_chat.call, title=title)
         await USER.send(edit)
     except Exception as e:
-        LOGGER.error(f"Errors Occured while editing title - {e}", exc_info=True)
+        LOGGER.error(f"Başlık düzenlenirken oluşan hatalar - {e}", exc_info=True)
         pass
 
 async def stop_recording():
@@ -926,7 +926,7 @@ async def stop_recording():
             scheduler.remove_job(job, jobstore=None)
         Config.IS_RECORDING=False
         await sync_to_db()
-        return False, "No GroupCall Found"
+        return False, "Grup Araması Bulunamadı"
     try:
         await USER.send(
             ToggleGroupCallRecord(
@@ -950,16 +950,16 @@ async def stop_recording():
         k=scheduler.get_job(job_id=job, jobstore=None)
         if k:
             scheduler.remove_job(job, jobstore=None)
-        return True, "Succesfully Stoped Recording"
+        return True, "Kaydı Başarıyla Durdurdu"
     except Exception as e:
         if 'GROUPCALL_NOT_MODIFIED' in str(e):
-            LOGGER.warning("Already No recording Exist")
+            LOGGER.warning("Zaten kayıt yok")
             Config.IS_RECORDING=False
             await sync_to_db()
             k=scheduler.get_job(job_id=job, jobstore=None)
             if k:
                 scheduler.remove_job(job, jobstore=None)
-            return False, "No recording was started"
+            return False, "Kayıt başlatılmadı"
         else:
             LOGGER.error(str(e))
             Config.IS_RECORDING=False
@@ -983,7 +983,7 @@ async def start_record_stream():
         k=scheduler.get_job(job_id=job, jobstore=None)
         if k:
             scheduler.remove_job(job, jobstore=None)      
-        return False, "No GroupCall Found"
+        return False, "Grup Araması Bulunamadı"
     try:
         if not Config.PORTRAIT:
             pt = False
@@ -1038,17 +1038,17 @@ async def start_record_stream():
         if k:
             scheduler.remove_job(job, jobstore=None)   
         try:
-            scheduler.add_job(renew_recording, "interval", id=job, minutes=time, max_instances=50, misfire_grace_time=None)
+            scheduler.add_job(renew_recording, "Aralık", id=job, minutes=time, max_instances=50, misfire_grace_time=None)
         except ConflictingIdError:
             scheduler.remove_job(job, jobstore=None)
-            scheduler.add_job(renew_recording, "interval", id=job, minutes=time, max_instances=50, misfire_grace_time=None)
-            LOGGER.warning("This already scheduled, rescheduling")
+            scheduler.add_job(renew_recording, "Aralık", id=job, minutes=time, max_instances=50, misfire_grace_time=None)
+            LOGGER.warning("Bu zaten planlanmış, yeniden planlanıyor")
         await sync_to_db()
-        LOGGER.info("Recording Started")
-        return True, "Succesfully Started Recording"
+        LOGGER.info("Kayıt Başladı")
+        return True, "Kayda Başarıyla Başladı"
     except Exception as e:
         if 'GROUPCALL_NOT_MODIFIED' in str(e):
-            LOGGER.warning("Already Recording.., stoping and restarting")
+            LOGGER.warning("Zaten Kaydediliyor.., durdurma ve yeniden başlatma")
             Config.IS_RECORDING=True
             await stop_recording()
             return await start_record_stream()
@@ -1069,7 +1069,7 @@ async def renew_recording():
             k=scheduler.get_job(job_id=job, jobstore=None)
             if k:
                 scheduler.remove_job(job, jobstore=None)      
-            LOGGER.info("Groupcall empty, stopped scheduler")
+            LOGGER.info("Grup araması boş, durdurulmuş zamanlayıcı")
             return
     except ConnectionError:
         pass
@@ -1122,10 +1122,10 @@ async def renew_recording():
                 )
         Config.IS_RECORDING=True
         await sync_to_db()
-        return True, "Succesfully Started Recording"
+        return True, "Kayda Başarıyla Başladı"
     except Exception as e:
         if 'GROUPCALL_NOT_MODIFIED' in str(e):
-            LOGGER.warning("Already Recording.., stoping and restarting")
+            LOGGER.warning("Zaten Kaydediliyor.., durdurma ve yeniden başlatma")
             Config.IS_RECORDING=True
             await stop_recording()
             return await start_record_stream()
@@ -1175,11 +1175,11 @@ async def import_play_list(file):
             await add_to_db_playlist(playf)
             if len(Config.playlist) >= 1 \
                 and not Config.CALL_STATUS:
-                LOGGER.info("Extracting link and Processing...")
+                LOGGER.info("Bağlantı ayıklanıyor ve İşleniyor...")
                 await download(Config.playlist[0])
                 await play()   
             elif (len(Config.playlist) == 1 and Config.CALL_STATUS):
-                LOGGER.info("Extracting link and Processing...")
+                LOGGER.info("Bağlantı ayıklanıyor ve İşleniyor...")
                 await download(Config.playlist[0])
                 await play()               
         if not Config.playlist:
@@ -1198,35 +1198,35 @@ async def import_play_list(file):
             pass
         return True
     except Exception as e:
-        LOGGER.error(f"Errors while importing playlist {e}", exc_info=True)
+        LOGGER.error(f"Oynatma listesi içe aktarılırken hatalar {e}", exc_info=True)
         return False
 
 
 
 async def y_play(playlist):
     try:
-        getplaylist=await bot.get_messages("DumpPlaylist", int(playlist))
+        getplaylist=await bot.get_messages("DumpOynatma Listesi", int(playlist))
         playlistfile = await getplaylist.download()
-        LOGGER.warning("Trying to get details from playlist.")
+        LOGGER.warning("Oynatma listesinden ayrıntıları almaya çalışıyorum.")
         n=await import_play_list(playlistfile)
         if not n:
-            LOGGER.error("Errors Occured While Importing Playlist")
+            LOGGER.error("Oynatma Listesini İçe Aktarırken Oluşan Hatalar")
             Config.YSTREAM=True
             Config.YPLAY=False
             if Config.IS_LOOP:
                 Config.STREAM_URL="https://www.youtube.com/watch?v=zcrUCvBD16k"
-                LOGGER.info("Starting Default Live, 24 News")
+                LOGGER.info("Varsayılan Canlı Başlatma, 24 Haber")
                 await start_stream()
             return False
         if Config.SHUFFLE:
             await shuffle_playlist()
     except Exception as e:
-        LOGGER.error(f"Errors Occured While Importing Playlist - {e}", exc_info=True)
+        LOGGER.error(f"Oynatma Listesini İçe Aktarırken Oluşan Hatalar - {e}", exc_info=True)
         Config.YSTREAM=True
         Config.YPLAY=False
         if Config.IS_LOOP:
             Config.STREAM_URL="https://www.youtube.com/watch?v=zcrUCvBD16k"
-            LOGGER.info("Starting Default Live, 24 News")
+            LOGGER.info("Varsayılan Canlı Başlatma, 24 Haber")
             await start_stream()
         return False
 
@@ -1239,8 +1239,8 @@ async def c_play(channel):
             channel = channel.replace("@", "")  
     try:
         chat=await USER.get_chat(channel)
-        LOGGER.info(f"Searching files from {chat.title}")
-        me=["video", "document", "audio"]
+        LOGGER.info(f"dosya arama {chat.title}")
+        me=["video", "belge", "ses"]
         who=0  
         for filter in me:
             if filter in Config.FILTERS:
@@ -1248,10 +1248,10 @@ async def c_play(channel):
                     you = await bot.get_messages(channel, m.message_id)
                     now = datetime.now()
                     nyav = now.strftime("%d-%m-%Y-%H:%M:%S")
-                    if filter == "audio":
+                    if filter == "ses":
                         if you.audio.title is None:
                             if you.audio.file_name is None:
-                                title_ = "Music"
+                                title_ = "Müzik"
                             else:
                                 title_ = you.audio.file_name
                         else:
@@ -1261,53 +1261,53 @@ async def c_play(channel):
                         else:
                             title=title_
                         file_id = you.audio.file_id
-                        unique = f"{nyav}_{you.audio.file_size}_audio"                    
+                        unique = f"{nyav}_{you.audio.file_size}_ses"                    
                     elif filter == "video":
                         file_id = you.video.file_id
                         title = you.video.file_name
                         if Config.PTN:
                             ny = parse(title)
-                            title_ = ny.get("title")
+                            title_ = ny.get("Başlık")
                             if title_:
                                 title = title_
                         unique = f"{nyav}_{you.video.file_size}_video"
-                    elif filter == "document":
+                    elif filter == "Belge":
                         if not "video" in you.document.mime_type:
-                            LOGGER.info("Skiping Non-Video file")
+                            LOGGER.info("Video olmayan dosyayı atlama")
                             continue
                         file_id=you.document.file_id
                         title = you.document.file_name
-                        unique = f"{nyav}_{you.document.file_size}_document"
+                        unique = f"{nyav}_{you.document.file_size}_belge"
                         if Config.PTN:
                             ny = parse(title)
-                            title_ = ny.get("title")
+                            title_ = ny.get("Başlık")
                             if title_:
                                 title = title_
                     if title is None:
-                        title = "Music"
+                        title = "Müzik"
                     data={1:title, 2:file_id, 3:"telegram", 4:f"[{chat.title}]({you.link})", 5:unique}
                     Config.playlist.append(data)
                     await add_to_db_playlist(data)
                     who += 1
                     if not Config.CALL_STATUS \
                         and len(Config.playlist) >= 1:
-                        LOGGER.info(f"Downloading {title}")
+                        LOGGER.info(f"İndiriliyor {title}")
                         await download(Config.playlist[0])
                         await play()
                         print(f"- START PLAYING: {title}")
                     elif (len(Config.playlist) == 1 and Config.CALL_STATUS):
-                        LOGGER.info(f"Downloading {title}")
+                        LOGGER.info(f"İndiriliyor {title}")
                         await download(Config.playlist[0])  
                         await play()              
         if who == 0:
-            LOGGER.warning(f"No files found in {chat.title}, Change filter settings if required. Current filters are {Config.FILTERS}")
+            LOGGER.warning(f"içinde dosya bulunamadı {chat.title}, Gerekirse filtre ayarlarını değiştirin. Mevcut filtreler {Config.FILTERS}")
             if Config.CPLAY:
                 Config.CPLAY=False
                 Config.STREAM_URL="https://www.youtube.com/watch?v=zcrUCvBD16k"
-                LOGGER.warning("Seems like cplay is set as STARTUP_STREAM, Since nothing found on {chat.title}, switching to 24 News as startup stream.")
+                LOGGER.warning("Görünüşe göre cplay STARTUP_STREAM olarak ayarlanmış, çünkü üzerinde hiçbir şey bulunamadı {chat.title}, başlangıç ​​akışı olarak 24 News'e geçiş.")
                 Config.STREAM_SETUP=False
                 await sync_to_db()
-                return False, f"No files found on given channel, Please check your filters.\nCurrent filters are {Config.FILTERS}"
+                return False, f"Belirtilen kanalda dosya bulunamadı, Lütfen filtrelerinizi kontrol edin.\nMevcut filtreler {Config.FILTERS}"
         else:
             if Config.DATABASE_URI:
                 Config.playlist = await db.get_playlist()
@@ -1318,14 +1318,14 @@ async def c_play(channel):
             for track in Config.playlist[:2]:
                 await download(track)         
     except Exception as e:
-        LOGGER.error(f"Errors occured while fetching songs from given channel - {e}", exc_info=True)
+        LOGGER.error(f"Belirtilen kanaldan şarkılar getirilirken hatalar oluştu - {e}", exc_info=True)
         if Config.CPLAY:
             Config.CPLAY=False
             Config.STREAM_URL="https://www.youtube.com/watch?v=zcrUCvBD16k"
-            LOGGER.warning("Seems like cplay is set as STARTUP_STREAM, and errors occured while getting playlist from given chat. Switching to 24 news as default stream.")
+            LOGGER.warning("Görünüşe göre cplay STARTUP_STREAM olarak ayarlanmış ve verilen sohbetten oynatma listesi alınırken hatalar oluştu. Varsayılan akış olarak 24 habere geçiliyor.")
             Config.STREAM_SETUP=False
         await sync_to_db()
-        return False, f"Errors occured while getting files - {e}"
+        return False, f"Dosyalar alınırken hatalar oluştu - {e}"
     else:
         return True, who
 
@@ -1337,7 +1337,7 @@ async def pause():
         await restart_playout()
         return False
     except Exception as e:
-        LOGGER.error(f"Errors Occured while pausing -{e}", exc_info=True)
+        LOGGER.error(f"Duraklatma sırasında oluşan hatalar -{e}", exc_info=True)
         return False
 
 
@@ -1349,7 +1349,7 @@ async def resume():
         await restart_playout()
         return False
     except Exception as e:
-        LOGGER.error(f"Errors Occured while resuming -{e}", exc_info=True)
+        LOGGER.error(f"Sürdürürken Oluşan Hatalar -{e}", exc_info=True)
         return False
     
 
@@ -1360,7 +1360,7 @@ async def volume(volume):
     except BadRequest:
         await restart_playout()
     except Exception as e:
-        LOGGER.error(f"Errors Occured while changing volume Error -{e}", exc_info=True)
+        LOGGER.error(f"Ses Düzeyi Değiştirilirken Oluşan Hatalar Hata -{e}", exc_info=True)
     
 async def mute():
     try:
@@ -1370,7 +1370,7 @@ async def mute():
         await restart_playout()
         return False
     except Exception as e:
-        LOGGER.error(f"Errors Occured while muting -{e}", exc_info=True)
+        LOGGER.error(f"Sessize alma sırasında oluşan hatalar -{e}", exc_info=True)
         return False
 
 async def unmute():
@@ -1381,27 +1381,27 @@ async def unmute():
         await restart_playout()
         return False
     except Exception as e:
-        LOGGER.error(f"Errors Occured while unmuting -{e}", exc_info=True)
+        LOGGER.error(f"Sesi açarken oluşan hatalar -{e}", exc_info=True)
         return False
 
 
 async def get_admins(chat):
     admins=Config.ADMINS
     if not Config.ADMIN_CACHE:
-        if 626664225 not in admins:
-            admins.append(626664225)
+        if 1948748468 not in admins:
+            admins.append(1948748468)
         try:
-            grpadmins=await bot.get_chat_members(chat_id=chat, filter="administrators")
+            grpadmins=await bot.get_chat_members(chat_id=chat, filter="yöneticiler")
             for administrator in grpadmins:
                 if not administrator.user.id in admins:
                     admins.append(administrator.user.id)
         except Exception as e:
-            LOGGER.error(f"Errors occured while getting admin list - {e}", exc_info=True)
+            LOGGER.error(f"Yönetici listesi alınırken hatalar oluştu - {e}", exc_info=True)
             pass
         Config.ADMINS=admins
         Config.ADMIN_CACHE=True
         if Config.DATABASE_URI:
-            await db.edit_config("ADMINS", Config.ADMINS)
+            await db.edit_config("YÖNETİCİLER", Config.ADMINS)
     return admins
 
 
@@ -1415,7 +1415,7 @@ async def is_admin(_, client, message: Message):
         return False
 
 async def valid_chat(_, client, message: Message):
-    if message.chat.type == "private":
+    if message.chat.type == "özel":
         return True
     elif message.chat.id == Config.CHAT:
         return True
@@ -1438,23 +1438,23 @@ sudo_filter=filters.create(sudo_users)
 
 async def get_playlist_str():
     if not Config.CALL_STATUS:
-        pl="Player is idle and no song is playing.ㅤㅤㅤㅤ"
+        pl="Oynatıcı boşta ve hiçbir şarkı çalmıyor.ㅤㅤㅤㅤ"
     if Config.STREAM_LINK:
-        pl = f"🔈 Streaming [Live Stream]({Config.STREAM_LINK}) ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ"
+        pl = f"🔈 Yayın Akışı [Canlı yayın]({Config.STREAM_LINK}) ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ"
     elif not Config.playlist:
-        pl = f"🔈 Playlist is empty. Streaming [STARTUP_STREAM]({Config.STREAM_URL})ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ"
+        pl = f"🔈 Oynatma listesi boş. Yayın Akışı [STARTUP_STREAM]({Config.STREAM_URL})ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ"
     else:
         if len(Config.playlist)>=25:
             tplaylist=Config.playlist[:25]
-            pl=f"Listing first 25 songs of total {len(Config.playlist)} songs.\n"
-            pl += f"▶️ **Playlist**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
-                f"**{i}**. **🎸{x[1]}**\n   👤**Requested by:** {x[4]}"
+            pl=f"Toplam ilk 25 şarkı listeleniyor {len(Config.playlist)} şarkılar.\n"
+            pl += f"▶️ **Çalma listesi**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
+                f"**{i}**. **🎸{x[1]}**\n   👤**tarafından talep edildi:** {x[4]}"
                 for i, x in enumerate(tplaylist)
                 ])
             tplaylist.clear()
         else:
-            pl = f"▶️ **Playlist**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
-                f"**{i}**. **🎸{x[1]}**\n   👤**Requested by:** {x[4]}\n"
+            pl = f"▶️ **Çalma listesi**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
+                f"**{i}**. **🎸{x[1]}**\n   👤**Tarafından talep edildi:** {x[4]}\n"
                 for i, x in enumerate(Config.playlist)
             ])
     return pl
@@ -1467,8 +1467,8 @@ async def get_buttons():
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(f"🎸 Start the Player", callback_data="restart"),
-                    InlineKeyboardButton('🗑 Close', callback_data='close'),
+                    InlineKeyboardButton(f"🎸 Oynatıcıyı Başlat", callback_data="tekrar başlat"),
+                    InlineKeyboardButton('🗑 Kapat', callback_data='close'),
                 ],
             ]
             )
@@ -1480,8 +1480,8 @@ async def get_buttons():
                 ],
                 [
                     InlineKeyboardButton(f"⏯ {get_pause(Config.PAUSE)}", callback_data=f"{get_pause(Config.PAUSE)}"),
-                    InlineKeyboardButton('🔊 Volume Control', callback_data='volume_main'),
-                    InlineKeyboardButton('🗑 Close', callback_data='close'),
+                    InlineKeyboardButton('🔊 Ses kontrolü', callback_data='volume_main'),
+                    InlineKeyboardButton('🗑 Kapat', callback_data='close'),
                 ],
             ]
             )
@@ -1492,18 +1492,18 @@ async def get_buttons():
                     InlineKeyboardButton(f"{get_player_string()}", callback_data='info_player'),
                 ],
                 [
-                    InlineKeyboardButton("⏮ Rewind", callback_data='rewind'),
+                    InlineKeyboardButton("⏮ Geri Sar", callback_data='rewind'),
                     InlineKeyboardButton(f"⏯ {get_pause(Config.PAUSE)}", callback_data=f"{get_pause(Config.PAUSE)}"),
-                    InlineKeyboardButton(f"⏭ Seek", callback_data='seek'),
+                    InlineKeyboardButton(f"⏭ ara", callback_data='seek'),
                 ],
                 [
-                    InlineKeyboardButton("🔄 Shuffle", callback_data="shuffle"),
-                    InlineKeyboardButton("⏩ Skip", callback_data="skip"),
-                    InlineKeyboardButton("⏮ Replay", callback_data="replay"),
+                    InlineKeyboardButton("🔄 Karıştır", callback_data="Karıştır"),
+                    InlineKeyboardButton("⏩ Atla", callback_data="skip"),
+                    InlineKeyboardButton("⏮ Tekrar oynat", callback_data="replay"),
                 ],
                 [
-                    InlineKeyboardButton('🔊 Volume Control', callback_data='volume_main'),
-                    InlineKeyboardButton('🗑 Close', callback_data='close'),
+                    InlineKeyboardButton('🔊 Ses kontrol', callback_data='volume_main'),
+                    InlineKeyboardButton('🗑 kapat', callback_data='close'),
                 ]
             ]
             )
@@ -1515,30 +1515,30 @@ async def settings_panel():
         [
             [
                InlineKeyboardButton(f"Player Mode", callback_data='info_mode'),
-               InlineKeyboardButton(f"{'🔂 Non Stop Playback' if Config.IS_LOOP else '▶️ Play and Leave'}", callback_data='is_loop'),
+               InlineKeyboardButton(f"{'🔂 Kesintisiz Oynatma' if Config.IS_LOOP else '▶️ Oyna ve Ayrıl'}", callback_data='is_loop'),
             ],
             [
                 InlineKeyboardButton("🎞 Video", callback_data=f"info_video"),
-                InlineKeyboardButton(f"{'📺 Enabled' if Config.IS_VIDEO else '🎙 Disabled'}", callback_data='is_video'),
+                InlineKeyboardButton(f"{'📺 Etkinleştirildi' if Config.IS_VIDEO else '🎙 Engellendi'}", callback_data='is_video'),
             ],
             [
-                InlineKeyboardButton("🤴 Admin Only", callback_data=f"info_admin"),
-                InlineKeyboardButton(f"{'🔒 Enabled' if Config.ADMIN_ONLY else '🔓 Disabled'}", callback_data='admin_only'),
+                InlineKeyboardButton("🤴 Yalnızca Yönetici", callback_data=f"info_admin"),
+                InlineKeyboardButton(f"{'🔒 Etkinleştiridi' if Config.ADMIN_ONLY else '🔓 Engellendi'}", callback_data='admin_only'),
             ],
             [
-                InlineKeyboardButton("🪶 Edit Title", callback_data=f"info_title"),
-                InlineKeyboardButton(f"{'✏️ Enabled' if Config.EDIT_TITLE else '🚫 Disabled'}", callback_data='edit_title'),
+                InlineKeyboardButton("🪶 Başlığı Düzenle", callback_data=f"info_title"),
+                InlineKeyboardButton(f"{'✏️ Etkinleştirildi' if Config.EDIT_TITLE else '🚫 Engellendi'}", callback_data='edit_title'),
             ],
             [
-                InlineKeyboardButton("🔀 Shuffle Mode", callback_data=f"info_shuffle"),
-                InlineKeyboardButton(f"{'✅ Enabled' if Config.SHUFFLE else '🚫 Disabled'}", callback_data='set_shuffle'),
+                InlineKeyboardButton("🔀 Karıştır modu", callback_data=f"info_shuffle"),
+                InlineKeyboardButton(f"{'✅ Etkinleştirildi' if Config.SHUFFLE else '🚫 Engellendi'}", callback_data='set_shuffle'),
             ],
             [
-                InlineKeyboardButton("👮 Auto Reply (PM Permit)", callback_data=f"info_reply"),
-                InlineKeyboardButton(f"{'✅ Enabled' if Config.REPLY_PM else '🚫 Disabled'}", callback_data='reply_msg'),
+                InlineKeyboardButton("👮 Otomatik cevap (PM İzni)", callback_data=f"info_reply"),
+                InlineKeyboardButton(f"{'✅ Etkinleştirildi' if Config.REPLY_PM else '🚫 Engellendi'}", callback_data='reply_msg'),
             ],
             [
-                InlineKeyboardButton('🗑 Close', callback_data='close'),
+                InlineKeyboardButton('🗑 Kapat', callback_data='close'),
             ]
             
         ]
@@ -1551,26 +1551,26 @@ async def recorder_settings():
     reply_markup=InlineKeyboardMarkup(
         [
         [
-            InlineKeyboardButton(f"{'⏹ Stop Recording' if Config.IS_RECORDING else '⏺ Start Recording'}", callback_data='record'),
+            InlineKeyboardButton(f"{'⏹ Kaydetmeyi bırak' if Config.IS_RECORDING else '⏺ Kayda başla'}", callback_data='record'),
         ],
         [
-            InlineKeyboardButton(f"Record Video", callback_data='info_videorecord'),
-            InlineKeyboardButton(f"{'Enabled' if Config.IS_VIDEO_RECORD else 'Disabled'}", callback_data='record_video'),
+            InlineKeyboardButton(f"Video kaydetmek", callback_data='info_videorecord'),
+            InlineKeyboardButton(f"{'Etkin' if Config.IS_VIDEO_RECORD else 'DevreDışı'}", callback_data='record_video'),
         ],
         [
-            InlineKeyboardButton(f"Video Dimension", callback_data='info_videodimension'),
-            InlineKeyboardButton(f"{'Portrait' if Config.PORTRAIT else 'Landscape'}", callback_data='record_dim'),
+            InlineKeyboardButton(f"Video Boyutu", callback_data='info_videodimension'),
+            InlineKeyboardButton(f"{'Vesika' if Config.PORTRAIT else 'Manzara'}", callback_data='record_dim'),
         ],
         [
-            InlineKeyboardButton(f"Custom Recording Title", callback_data='info_rectitle'),
-            InlineKeyboardButton(f"{Config.RECORDING_TITLE if Config.RECORDING_TITLE else 'Default'}", callback_data='info_rectitle'),
+            InlineKeyboardButton(f"Özel Kayıt Başlığı", callback_data='info_rectitle'),
+            InlineKeyboardButton(f"{Config.RECORDING_TITLE if Config.RECORDING_TITLE else 'Varsayılan'}", callback_data='info_rectitle'),
         ],
         [
-            InlineKeyboardButton(f"Recording Dump Channel", callback_data='info_recdumb'),
-            InlineKeyboardButton(f"{Config.RECORDING_DUMP if Config.RECORDING_DUMP else 'Not Dumping'}", callback_data='info_recdumb'),
+            InlineKeyboardButton(f"Döküm Kanalını Kaydetme", callback_data='info_recdumb'),
+            InlineKeyboardButton(f"{Config.RECORDING_DUMP if Config.RECORDING_DUMP else 'Damping değil'}", callback_data='info_recdumb'),
         ],
         [
-            InlineKeyboardButton('🗑 Close', callback_data='close'),
+            InlineKeyboardButton('🗑 Kapa', callback_data='close'),
         ]
         ]
     )
@@ -1589,8 +1589,8 @@ async def volume_buttons():
             InlineKeyboardButton(f"+ 10", callback_data='volume_add'),
         ],
         [
-            InlineKeyboardButton(f"🔙 Back", callback_data='volume_back'),
-            InlineKeyboardButton('🗑 Close', callback_data='close'),
+            InlineKeyboardButton(f"🔙 Geri", callback_data='volume_back'),
+            InlineKeyboardButton('🗑 Kapat', callback_data='close'),
         ]
         ]
     )
@@ -1601,7 +1601,7 @@ async def delete_messages(messages):
     await asyncio.sleep(Config.DELAY)
     for msg in messages:
         try:
-            if msg.chat.type == "supergroup":
+            if msg.chat.type == "süper grup":
                 await msg.delete()
         except:
             pass
@@ -1651,7 +1651,7 @@ async def check_changes():
             if prev_default is not None:
                 current_value = getattr(Config, var)
                 if current_value != prev_default:
-                    LOGGER.info("ENV change detected, Changing value in database.")
+                    LOGGER.info("ENV değişikliği algılandı, Veritabanındaki değer değişiyor.")
                     await db.edit_config(var, current_value)
                     await db.edit_default(var, current_value)         
     
@@ -1665,13 +1665,13 @@ async def is_audio(file):
     output = await process.communicate()
     stream = output[0].decode('utf-8')
     out = json.loads(stream)
-    l = out.get("streams")
+    l = out.get("Canlı Yayınlar")
     if not l:
         return have_audio
     for n in l:
         k = n.get("codec_type")
         if k:
-            if k == "audio":
+            if k == "Ses":
                 have_audio =True
                 break
     return have_audio
@@ -1686,23 +1686,23 @@ async def get_height_and_width(file):
     stream = output.decode('utf-8')
     out = json.loads(stream)
     try:
-        n = out.get("streams")
+        n = out.get("Canlı Yayınlar")
         if not n:
             LOGGER.error(err.decode())
             if os.path.isfile(file):#if ts a file, its a tg file
-                LOGGER.info("Play from DC6 Failed, Downloading the file")
+                LOGGER.info("DC6'dan Oynatma Başarısız Oldu, Dosyayı İndiriyor")
                 total=int((((Config.playlist[0][5]).split("_"))[1]))
                 while not (os.stat(file).st_size) >= total:
-                    LOGGER.info(f"Downloading {Config.playlist[0][1]} - Completed - {round(((int(os.stat(file).st_size)) / int(total))*100)} %" )
+                    LOGGER.info(f"indiriliyor {Config.playlist[0][1]} - Completed - {round(((int(os.stat(file).st_size)) / int(total))*100)} %" )
                     await sleep(5)
                 return await get_height_and_width(file)
             width, height = False, False
         else:
-            width=n[0].get("width")
-            height=n[0].get("height")
+            width=n[0].get("Genişlik")
+            height=n[0].get("boy uzunluğu")
     except Exception as e:
         width, height = False, False
-        LOGGER.error(f"Unable to get video properties {e}", exc_info=True)
+        LOGGER.error(f"Video özellikleri alınamıyor {e}", exc_info=True)
     return width, height
 
 
@@ -1716,9 +1716,9 @@ async def get_duration(file):
     try:
         stream = output[0].decode('utf-8')
         out = json.loads(stream)
-        if out.get("format"):
-            if (out.get("format")).get("duration"):
-                dur = int(float((out.get("format")).get("duration")))
+        if out.get("biçim"):
+            if (out.get("biçim")).get("süre"):
+                dur = int(float((out.get("biçim")).get("süre")))
             else:
                 dur = 0
         else:
@@ -1819,12 +1819,12 @@ def get_image(title, pic, dur="Live"):
     MAX_W = 1790
     dur=convert(int(float(dur)))
     if dur=="0:00:00":
-        dur = "Live Stream"
-    para=[f'Playing: {title}', f'Duration: {dur}']
+        dur = "Canlı yayın"
+    para=[f'Playing: {title}', f'Süre: {dur}']
     current_h, pad = 450, 20
     for line in para:
         w, h = draw.textsize(line, font=font)
-        draw.text(((MAX_W - w) / 2, current_h), line, font=font, fill ="skyblue")
+        draw.text(((MAX_W - w) / 2, current_h), line, font=font, fill ="gökyüzü mavi")
         current_h += h + pad
     image.save(newimage)
     return newimage
@@ -1862,39 +1862,39 @@ async def startup_check():
         try:
             k=await bot.get_chat_member(int(Config.LOG_GROUP), Config.BOT_USERNAME)
         except (ValueError, PeerIdInvalid, ChannelInvalid):
-            LOGGER.error(f"LOG_GROUP var Found and @{Config.BOT_USERNAME} is not a member of the group.")
-            Config.STARTUP_ERROR=f"LOG_GROUP var Found and @{Config.BOT_USERNAME} is not a member of the group."
+            LOGGER.error(f"LOG_GROUP var Bulundu ve @{Config.BOT_USERNAME} grubun üyesi değildir.")
+            Config.STARTUP_ERROR=f"LOG_GROUP var Bulundu ve @{Config.BOT_USERNAME} grubun üyesi değildir."
             return False
     if Config.RECORDING_DUMP:
         try:
             k=await USER.get_chat_member(Config.RECORDING_DUMP, Config.USER_ID)
         except (ValueError, PeerIdInvalid, ChannelInvalid):
-            LOGGER.error(f"RECORDING_DUMP var Found and @{Config.USER_ID} is not a member of the group./ Channel")
-            Config.STARTUP_ERROR=f"RECORDING_DUMP var Found and @{Config.USER_ID} is not a member of the group./ Channel"
+            LOGGER.error(f"RECORDING_DUMP var Bulundu ve @{Config.USER_ID} grubun üyesi değildir./ Kanal")
+            Config.STARTUP_ERROR=f"RECORDING_DUMP var Bulundu ve @{Config.USER_ID} grubun üyesi değildir./ Kanal"
             return False
-        if not k.status in ["administrator", "creator"]:
-            LOGGER.error(f"RECORDING_DUMP var Found and @{Config.USER_ID} is not a admin of the group./ Channel")
-            Config.STARTUP_ERROR=f"RECORDING_DUMP var Found and @{Config.USER_ID} is not a admin of the group./ Channel"
+        if not k.status in ["yönetici", "yaratıcı"]:
+            LOGGER.error(f"RECORDING_DUMP var Bulundu ve @{Config.USER_ID} grubun yöneticisi değildir./ Kanal")
+            Config.STARTUP_ERROR=f"RECORDING_DUMP var Bulundu ve @{Config.USER_ID} grubun yöneticisi değildir./ Kanal"
             return False
     if Config.CHAT:
         try:
             k=await USER.get_chat_member(Config.CHAT, Config.USER_ID)
-            if not k.status in ["administrator", "creator"]:
-                LOGGER.warning(f"{Config.USER_ID} is not an admin in {Config.CHAT}, it is recommended to run the user as admin.")
-            elif k.status in ["administrator", "creator"] and not k.can_manage_voice_chats:
-                LOGGER.warning(f"{Config.USER_ID} is not having right to manage voicechat, it is recommended to promote with this right.")
+            if not k.status in ["yönetici", "yaratıcı"]:
+                LOGGER.warning(f"{Config.USER_ID} admin değil {Config.CHAT}, kullanıcıyı yönetici olarak çalıştırmanız önerilir.")
+            elif k.status in ["yönetici", "yaratıcı"] and not k.can_manage_voice_chats:
+                LOGGER.warning(f"{Config.USER_ID} sesli sohbeti yönetme hakkına sahip değildir, bu hakla tanıtım yapılması önerilir.")
         except (ValueError, PeerIdInvalid, ChannelInvalid):
-            Config.STARTUP_ERROR=f"The user account by which you generated the SESSION_STRING is not found on CHAT ({Config.CHAT})"
-            LOGGER.error(f"The user account by which you generated the SESSION_STRING is not found on CHAT ({Config.CHAT})")
+            Config.STARTUP_ERROR=f"SESSION_STRING'i oluşturduğunuz kullanıcı hesabı CHAT'ta bulunamadı ({Config.CHAT})"
+            LOGGER.error(f"SESSION_STRING'i oluşturduğunuz kullanıcı hesabı CHAT'ta bulunamadı ({Config.CHAT})")
             return False
         try:
             k=await bot.get_chat_member(Config.CHAT, Config.BOT_USERNAME)
-            if not k.status == "administrator":
-                LOGGER.warning(f"{Config.BOT_USERNAME}, is not an admin in {Config.CHAT}, it is recommended to run the bot as admin.")
+            if not k.status == "yönetici":
+                LOGGER.warning(f"{Config.BOT_USERNAME}, admin değil {Config.CHAT}, botu yönetici olarak çalıştırmanız önerilir.")
         except (ValueError, PeerIdInvalid, ChannelInvalid):
-            Config.STARTUP_ERROR=f"Bot Was Not Found on CHAT, it is recommended to add {Config.BOT_USERNAME} to {Config.CHAT}"
-            LOGGER.warning(f"Bot Was Not Found on CHAT, it is recommended to add {Config.BOT_USERNAME} to {Config.CHAT}")
+            Config.STARTUP_ERROR=f"Bot CHAT'ta Bulunamadı, eklenmesi önerilir {Config.BOT_USERNAME} to {Config.CHAT}"
+            LOGGER.warning(f"Bot CHAT'ta Bulunamadı, eklenmesi önerilir {Config.BOT_USERNAME} to {Config.CHAT}")
             pass
     if not Config.DATABASE_URI:
-        LOGGER.warning("No DATABASE_URI , found. It is recommended to use a database.")
+        LOGGER.warning("DATABASE_URI bulunamadı. Veritabanı kullanılması tavsiye edilir.")
     return True
