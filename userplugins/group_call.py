@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -82,8 +82,8 @@ async def reply(client, message):
             await client.delete_messages(message.chat.id, [old["msg"], old["s"]])
         Config.msg[message.chat.id]={"msg":m.updates[1].message.id, "s":message.message_id}
     except BotInlineDisabled:
-        LOGGER.error(f"Error: Inline Mode for @{Config.BOT_USERNAME} is not enabled. Enable from @Botfather to enable PM Permit.")
-        await message.reply(f"{Config.REPLY_MESSAGE}\n\n<b>You can't use this bot in your group, for that you have to make your own bot from the [SOURCE CODE](https://github.com/subinps/VCPlayerBot) below.</b>", disable_web_page_preview=True)
+        LOGGER.error(f"Hata: için Satır İçi Mod @{Config.BOT_USERNAME} etkin değil. PM İzni'ni etkinleştirmek için @Botfather'dan etkinleştirin.")
+        await message.reply(f"{Config.REPLY_MESSAGE}\n\n<b>Bu botu grubunuzda kullanamazsınız, bunun için kendi botunuzu oluşturmalısınız. [SOURCE CODE](https://github.com/SakirBey1/GrupMüzikBotu) Aşağıda.</b>", disable_web_page_preview=True)
     except Exception as e:
         LOGGER.error(e, exc_info=True)
         pass
@@ -114,9 +114,9 @@ async def service_msg(client, message):
         k=scheduler.get_job(str(Config.CHAT), jobstore=None) #scheduled records
         if k:
             await start_record_stream()
-            LOGGER.info("Resuming recording..")
+            LOGGER.info("Kayda devam ediliyor...")
         elif Config.WAS_RECORDING:
-            LOGGER.info("Previous recording was ended unexpectedly, Now resuming recordings.")
+            LOGGER.info("Önceki kayıt beklenmedik bir şekilde sonlandırıldı, Şimdi kayıtlara devam ediliyor.")
             await start_record_stream()#for unscheduled
         a = await client.send(
                 GetFullChannel(
@@ -129,16 +129,16 @@ async def service_msg(client, message):
                 )
         if a.full_chat.call is not None:
             Config.CURRENT_CALL=a.full_chat.call.id
-        LOGGER.info("Voice chat started.")
+        LOGGER.info("Sesli sohbet başladı.")
         await sync_to_db()
     elif message.service == 'voice_chat_scheduled':
-        LOGGER.info("VoiceChat Scheduled")
+        LOGGER.info("Sesli Sohbet Planlandı")
         Config.IS_ACTIVE=False
         Config.HAS_SCHEDULE=True
         await sync_to_db()
     elif message.service == 'voice_chat_ended':
         Config.IS_ACTIVE=False
-        LOGGER.info("Voicechat ended")
+        LOGGER.info("Sesli Sohbet sona erdi")
         Config.CURRENT_CALL=None
         if Config.IS_RECORDING:
             Config.WAS_RECORDING=True
@@ -175,11 +175,11 @@ async def handle_raw_updates(client: Client, update: Update, user: dict, chat: d
         if update.call is None:
             Config.IS_ACTIVE = False
             Config.CURRENT_CALL=None
-            LOGGER.warning("No Active Group Calls Found.")
+            LOGGER.warning("Etkin Grup Araması Bulunamadı.")
             if Config.IS_RECORDING:
                 Config.WAS_RECORDING=True
                 await stop_recording()
-                LOGGER.warning("Group call was ended and hence stoping recording.")
+                LOGGER.warning("Grup araması sonlandırıldı ve bu nedenle kayıt durduruldu.")
             Config.HAS_SCHEDULE = False
             await sync_to_db()
             return
@@ -192,7 +192,7 @@ async def handle_raw_updates(client: Client, update: Update, user: dict, chat: d
                 if Config.IS_RECORDING:
                     Config.WAS_RECORDING=True
                     await stop_recording()
-                LOGGER.warning("Group Call Was ended")
+                LOGGER.warning("Grup Görüşmesi Sonlandırıldı")
                 Config.CALL_STATUS = False
                 await sync_to_db()
                 return
@@ -201,7 +201,7 @@ async def handle_raw_updates(client: Client, update: Update, user: dict, chat: d
             if Config.IS_RECORDING and not call.record_video_active:
                 Config.LISTEN=True
                 await stop_recording()
-                LOGGER.warning("Recording was ended by user, hence stopping the schedules.")
+                LOGGER.warning("Kayıt kullanıcı tarafından sonlandırıldı, dolayısıyla programlar durduruldu.")
                 return
             if call.schedule_date:
                 Config.HAS_SCHEDULE=True
@@ -244,8 +244,8 @@ async def handler(client: PyTgCalls, update: Update):
 @group_call.on_stream_end()
 async def handler(client: PyTgCalls, update: Update):
     if isinstance(update, StreamAudioEnded) or isinstance(update, StreamVideoEnded):
-        if not Config.STREAM_END.get("STATUS"):
-            Config.STREAM_END["STATUS"]=str(update)
+        if not Config.STREAM_END.get("DURUM"):
+            Config.STREAM_END["DURUM"]=str(update)
             if Config.STREAM_LINK and len(Config.playlist) == 0:
                 if Config.IS_LOOP:
                     await stream_from_link(Config.STREAM_LINK)
@@ -260,12 +260,12 @@ async def handler(client: PyTgCalls, update: Update):
                 await skip()          
             await sleep(15) #wait for max 15 sec
             try:
-                del Config.STREAM_END["STATUS"]
+                del Config.STREAM_END["DURUM"]
             except:
                 pass
         else:
             try:
-                del Config.STREAM_END["STATUS"]
+                del Config.STREAM_END["DURUM"]
             except:
                 pass
 
