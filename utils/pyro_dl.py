@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/Sakirbey1>
 #
 #  This file is part of Pyrogram.
 #
@@ -22,7 +22,7 @@
 
 #Pyrogram downloader modified to suit my needs. 
 #Downloads the file from telegram servers and retures the path of the file without waiting for the whole download to finish.
-#Copyright (C) @subinps
+#Copyright (C) @Sakirbey1
 
 
 from .logger import LOGGER
@@ -309,7 +309,7 @@ class Downloader():
                             # https://core.telegram.org/cdn#verifying-files
                             for i, h in enumerate(hashes):
                                 cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
-                                assert h.hash == sha256(cdn_chunk).digest(), f"Invalid CDN hash part {i}"
+                                assert h.hash == sha256(cdn_chunk).digest(), f"Geçersiz CDN karma bölümü {i}"
 
                             f.write(decrypted_chunk)
 
