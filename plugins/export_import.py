@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -41,43 +41,43 @@ from pyrogram.errors import (
 admin_filter=filters.create(is_admin)   
 
 
-@Client.on_message(filters.command(["export", f"export@{Config.BOT_USERNAME}"]) & admin_filter & chat_filter)
+@Client.on_message(filters.command(["ihracat", f"export@{Config.BOT_USERNAME}"]) & admin_filter & chat_filter)
 async def export_play_list(client, message: Message):
     if not Config.playlist:
-        k=await message.reply_text("Playlist is Empty")
+        k=await message.reply_text("Oynatma Listesi Boş")
         await delete_messages([message, k])
         return
     file=f"{message.chat.id}_{message.message_id}.json"
     with open(file, 'w+') as outfile:
         json.dump(Config.playlist, outfile, indent=4)
-    await client.send_document(chat_id=message.chat.id, document=file, file_name="PlayList.json", caption=f"Playlist\n\nNumber Of Songs: <code>{len(Config.playlist)}</code>\n\nJoin [XTZ Bots](https://t.me/subin_works)")
+    await client.send_document(chat_id=message.chat.id, document=file, file_name="PlayList.json", caption=f"çalma listesi\n\nŞarkı Sayısı: <code>{len(Config.playlist)}</code>\n\nSahibim [Developer💻](https://t.me/SakirBey1)")
     try:
         os.remove(file)
     except:
         pass
     await delete_messages([message])
 
-@Client.on_message(filters.command(["import", f"import@{Config.BOT_USERNAME}"]) & admin_filter & chat_filter)
+@Client.on_message(filters.command(["içe aktarmak", f"import@{Config.BOT_USERNAME}"]) & admin_filter & chat_filter)
 async def import_playlist(client, m: Message):
     with suppress(MessageIdInvalid, MessageNotModified):
         if m.reply_to_message is not None and m.reply_to_message.document:
             if m.reply_to_message.document.file_name != "PlayList.json":
-                k=await m.reply("Invalid PlayList file given. Export your current Playlist using /export.")
+                k=await m.reply("Geçersiz Oynatma Listesi dosyası verildi. /export kullanarak mevcut Çalma Listenizi dışa aktarın.")
                 await delete_messages([m, k])
                 return
             myplaylist=await m.reply_to_message.download()
-            status=await m.reply("Trying to get details from playlist.")
+            status=await m.reply("Oynatma listesinden ayrıntıları almaya çalışıyorum.")
             n=await import_play_list(myplaylist)
             if not n:
-                await status.edit("Errors Occured while importing playlist.")
+                await status.edit("Çalma listesi içe aktarılırken hatalar oluştu.")
                 await delete_messages([m, status])
                 return
             if Config.SHUFFLE:
                 await shuffle_playlist()
             pl=await get_playlist_str()
-            if m.chat.type == "private":
+            if m.chat.type == "özel":
                 await status.edit(pl, disable_web_page_preview=True, reply_markup=await get_buttons())        
-            elif not Config.LOG_GROUP and m.chat.type == "supergroup":
+            elif not Config.LOG_GROUP and m.chat.type == "Süper Grup":
                 if Config.msg.get('playlist'):
                     await Config.msg['playlist'].delete()
                 Config.msg['playlist'] = await status.edit(pl, disable_web_page_preview=True, reply_markup=await get_buttons())
@@ -85,5 +85,5 @@ async def import_playlist(client, m: Message):
             else:
                 await delete_messages([m, status])
         else:
-            k = await m.reply("No playList file given.")
+            k = await m.reply("Oynatma Listesi dosyası verilmedi.")
             await delete_messages([m, k])
