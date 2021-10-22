@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +30,7 @@ from utils import (
 async def add_admin(client, message):
     if message.reply_to_message:
         if message.reply_to_message.from_user.id is None:
-            k = await message.reply("You are an anonymous admin, you can't do this.")
+            k = await message.reply("Anonim bir yöneticisiniz, bunu yapamazsınız.")
             await delete_messages([message, k])
             return
         user_id=message.reply_to_message.from_user.id
@@ -43,8 +43,8 @@ async def add_admin(client, message):
             try:
                 user=await client.get_users(user)
             except Exception as e:
-                k=await message.reply(f"I was unable to locate that user.\nError: {e}")
-                LOGGER.error(f"Unable to find the user - {e}", exc_info=True)
+                k=await message.reply(f"Bu kullanıcıyı bulamadım.\nHatalar: {e}")
+                LOGGER.error(f"Kullanıcı bulunamadı - {e}", exc_info=True)
                 await delete_messages([message, k])
                 return
             user_id=user.id
@@ -53,19 +53,19 @@ async def add_admin(client, message):
                 user_id=int(user)
                 user=await client.get_users(user_id)
             except:
-                k=await message.reply(f"You should give a user id or his username with @.")
+                k=await message.reply(f"Bir kullanıcı kimliği veya kullanıcı adını vermelisiniz @.")
                 await delete_messages([message, k])
                 return
     else:
-        k=await message.reply("No user specified, reply to a user with /vcpromote or pass a users user id or username.")
+        k=await message.reply("Kullanıcı belirtilmedi, /vcpromote ile bir kullanıcıya yanıt verin veya bir kullanıcı kullanıcı kimliği veya kullanıcı adı iletin.")
         await delete_messages([message, k])
         return
     if user_id in Config.ADMINS:
-        k = await message.reply("This user is already an admin.") 
+        k = await message.reply("Bu kullanıcı zaten bir yöneticidir.") 
         await delete_messages([message, k])
         return
     Config.ADMINS.append(user_id)
-    k=await message.reply(f"Succesfully promoted {user.mention} as VC admin")
+    k=await message.reply(f"Başarıyla terfi {user.mention} VC yöneticisi olarak")
     await sync_to_db()
     await delete_messages([message, k])
 
@@ -74,7 +74,7 @@ async def add_admin(client, message):
 async def remove_admin(client, message):
     if message.reply_to_message:
         if message.reply_to_message.from_user.id is None:
-            k = await message.reply("You are an anonymous admin, you can't do this.")
+            k = await message.reply("Sen anonim bir yöneticisin, bunu yapamazsın.")
             await delete_messages([message, k])
             return
         user_id=message.reply_to_message.from_user.id
@@ -86,8 +86,8 @@ async def remove_admin(client, message):
             try:
                 user=await client.get_users(user)
             except Exception as e:
-                k = await message.reply(f"I was unable to locate that user.\nError: {e}")
-                LOGGER.error(f"Unable to Locate user, {e}", exc_info=True)
+                k = await message.reply(f"Bu kullanıcıyı bulamadım.\nHatalar: {e}")
+                LOGGER.error(f"Kullanıcı bulunamıyor, {e}", exc_info=True)
                 await delete_messages([message, k])
                 return
             user_id=user.id
@@ -96,19 +96,19 @@ async def remove_admin(client, message):
                 user_id=int(user)
                 user=await client.get_users(user_id)
             except:
-                k = await message.reply(f"You should give a user id or his username with @.")
+                k = await message.reply(f"Bir kullanıcı kimliği veya kullanıcı adını vermelisiniz @.")
                 await delete_messages([message, k])
                 return
     else:
-        k = await message.reply("No user specified, reply to a user with /vcdemote or pass a users user id or username.")
+        k = await message.reply("Kullanıcı belirtilmedi, /vcdemote ile bir kullanıcıya yanıt verin veya bir kullanıcı kullanıcı kimliği veya kullanıcı adı iletin.")
         await delete_messages([message, k])
         return
     if not user_id in Config.ADMINS:
-        k = await message.reply("This user is not an admin yet.")
+        k = await message.reply("Bu kullanıcı henüz bir yönetici değil.")
         await delete_messages([message, k])
         return
     Config.ADMINS.remove(user_id)
-    k = await message.reply(f"Succesfully Demoted {user.mention}")
+    k = await message.reply(f"Başarıyla Düşürüldü {user.mention}")
     await sync_to_db()
     await delete_messages([message, k])
 
@@ -117,6 +117,6 @@ async def remove_admin(client, message):
 async def refresh_admins(client, message):
     Config.ADMIN_CACHE=False
     await get_admins(Config.CHAT)
-    k = await message.reply("Admin list has been refreshed")
+    k = await message.reply("admin listesi yenilendi")
     await sync_to_db()
     await delete_messages([message, k])
