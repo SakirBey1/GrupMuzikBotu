@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -31,8 +31,8 @@ from pyrogram import (
 
 buttons = [
     [
-        InlineKeyboardButton('⚡️Make Own Bot', url='https://github.com/subinps/VCPlayerBot'),
-        InlineKeyboardButton('🧩 Join Here', url='https://t.me/subin_works'),
+        InlineKeyboardButton('⚡️Grubumuza katıl', url='https://t.me/kpdailesi'),
+        InlineKeyboardButton('💻 Developer', url='https://t.me/Sakirbey1'),
     ]
     ]
 def get_cmd(dur):
@@ -47,7 +47,7 @@ async def search(client, query):
         answers.append(
             InlineQueryResultArticle(
                 title="Deploy",
-                input_message_content=InputTextMessageContent(f"{Config.REPLY_MESSAGE}\n\n<b>You can't use this bot in your group, for that you have to make your own bot from the [SOURCE CODE](https://github.com/subinps/VCPlayerBot) below.</b>", disable_web_page_preview=True),
+                input_message_content=InputTextMessageContent(f"{Config.REPLY_MESSAGE}\n\n<b>Bu botu grubunuzda kullanamazsınız, bu yüzden aşağıdan kendi botunuzu yapmalısınız.</b>", disable_web_page_preview=True),
                 reply_markup=InlineKeyboardMarkup(buttons)
                 )
             )
@@ -58,24 +58,24 @@ async def search(client, query):
         await client.answer_inline_query(
             query.id,
             results=answers,
-            switch_pm_text=("Search a youtube video"),
+            switch_pm_text=("Bir youtube videosu arayın"),
             switch_pm_parameter="help",
             cache_time=0
         )
     else:
         videosSearch = VideosSearch(string.lower(), limit=50)
-        for v in videosSearch.result()["result"]:
+        for v in videosSearch.result()["sonuç"]:
             answers.append(
                 InlineQueryResultArticle(
-                    title=v["title"],
-                    description=("Duration: {} Views: {}").format(
-                        v["duration"],
-                        v["viewCount"]["short"]
+                    title=v["başlık"],
+                    description=("Süre: {} Görüntüleme: {}").format(
+                        v["süre"],
+                        v["görünümSayım"]["şort"]
                     ),
                     input_message_content=InputTextMessageContent(
-                        "{} https://www.youtube.com/watch?v={}".format(get_cmd(v["duration"]), v["id"])
+                        "{} https://www.youtube.com/watch?v={}".format(get_cmd(v["süre"]), v["id"])
                     ),
-                    thumb_url=v["thumbnails"][0]["url"]
+                    thumb_url=v["küçük resimler"][0]["url"]
                 )
             )
         try:
@@ -87,7 +87,7 @@ async def search(client, query):
             await query.answer(
                 results=answers,
                 cache_time=0,
-                switch_pm_text=("Nothing found"),
+                switch_pm_text=("Hiçbirşey Bulunamadı"),
                 switch_pm_parameter="",
             )
 
