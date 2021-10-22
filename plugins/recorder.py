@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) @subinps
+# Copyright (C) @SakirBey1
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -35,9 +35,9 @@ from pyrogram.types import (
 admin_filter=filters.create(is_admin) 
 
 
-@Client.on_message(filters.command(["record", f"record@{Config.BOT_USERNAME}"]) & admin_filter & chat_filter)
+@Client.on_message(filters.command(["kayıt", f"record@{Config.BOT_USERNAME}"]) & admin_filter & chat_filter)
 async def record_vc(bot, message):
-    await message.reply("Configure you VCPlayer Recording settings from hereㅤㅤ ㅤ", reply_markup=(await recorder_settings()))
+    await message.reply("GrupMüzikbotu Kayıt ayarlarınızı buradan yapılandırınㅤㅤ ㅤ", reply_markup=(await recorder_settings()))
     await delete_messages([message])
 
 @Client.on_message(filters.command(["rtitle", f"rtitle@{Config.BOT_USERNAME}"]) & admin_filter & chat_filter)
@@ -46,14 +46,14 @@ async def recording_title(bot, message):
     if " " in message.text:
         cmd, title = message.text.split(" ", 1)
     else:
-        await m.edit("Give me a new title. Use /rtitle < Custom Title >\nUse <code>False</code> to revert to default title")
+        await m.edit("Bana yeni bir başlık ver. /rtitle kullan < Custom Title >\nUse <code>False</code> varsayılan başlığa dönmek için")
         await delete_messages([message, m])
         return
 
     if Config.DATABASE_URI:
-        await m.edit("Mongo DB Found, Setting up recording title...") 
-        if title == "False":
-            await m.edit(f"Sucessfully removed custom recording title.")
+        await m.edit("Mongo DB Bulundu, Kayıt başlığı ayarlanıyor...") 
+        if title == "YANLIŞ":
+            await m.edit(f"Özel kayıt başlığı başarıyla kaldırıldı.")
             Config.RECORDING_TITLE=False
             await sync_to_db()
             await delete_messages([message, m])           
@@ -61,29 +61,29 @@ async def recording_title(bot, message):
         else:
             Config.RECORDING_TITLE=title
             await sync_to_db()
-            await m.edit(f"Succesfully changed recording title to {title}")
+            await m.edit(f"Kayıt başlığı başarıyla değiştirildi {title}")
             await delete_messages([message, m])
             return
     else:
         if not Config.HEROKU_APP:
-            buttons = [[InlineKeyboardButton('Heroku API_KEY', url='https://dashboard.heroku.com/account/applications/authorizations/new'), InlineKeyboardButton('🗑 Close', callback_data='close'),]]
+            buttons = [[InlineKeyboardButton('Heroku API_KEY', url='https://dashboard.heroku.com/account/applications/authorizations/new'), InlineKeyboardButton('🗑 Kapat', callback_data='close'),]]
             await m.edit(
-                text="No heroku app found, this command needs the following heroku vars to be set.\n\n1. <code>HEROKU_API_KEY</code>: Your heroku account api key.\n2. <code>HEROKU_APP_NAME</code>: Your heroku app name.", 
+                text="Heroku uygulaması bulunamadı, bu komutun ayarlanması için aşağıdaki heroku değişkenlerinin ayarlanması gerekiyor.\n\n1. <code>HEROKU_API_KEY</code>: Heroku hesabınızın API anahtarı.\n2. <code>HEROKU_APP_NAME</code>: Heroku uygulamanızın adı.", 
                 reply_markup=InlineKeyboardMarkup(buttons)) 
             await delete_messages([message])
             return     
         config = Config.HEROKU_APP.config()
-        if title == "False":
+        if title == "YANLIŞ":
             if "RECORDING_TITLE" in config:
-                await m.edit(f"Sucessfully removed custom recording title. Now restarting..")
+                await m.edit(f"Özel kayıt başlığı başarıyla kaldırıldı. Şimdi yeniden başlatılıyor..")
                 await delete_messages([message])
                 del config["RECORDING_TITLE"]                
                 config["RECORDING_TITLE"] = None
             else:
-                await m.edit(f"Its already default title, nothing was changed")
+                await m.edit(f"Zaten varsayılan başlığı, hiçbir şey değişmedi")
                 Config.RECORDING_TITLE=False
                 await delete_messages([message, m])
         else:
-            await m.edit(f"Succesfully changed recording title to {title}, Now restarting")
+            await m.edit(f"Kayıt başlığı başarıyla değiştirildi {title}, Şimdi yeniden başlatılıyor")
             await delete_messages([message])
             config["RECORDING_TITLE"] = title
