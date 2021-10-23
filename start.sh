@@ -2,7 +2,7 @@ echo "Cloning Repo...."
 if [ -z $BRANCH ]
 then
   echo "Cloning main branch...."
-  git clone https://github.com/SairBey1/GrupMüzikBotu /GrupMüzikBotu
+  git clone https://github.com/SakirBey1/GrupMüzikBotu /GrupMüzikBotu
 else
   echo "Cloning $BRANCH branch...."
   git clone https://github.com/SakirBey1/GrupMüzikBotu -b $BRANCH /GrupMüzikBotu
